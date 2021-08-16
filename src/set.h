@@ -1,5 +1,5 @@
-#ifndef MATH_SET_H
-#define MATH_SET_H
+#ifndef MATRIX_SET_H
+#define MATRIX_SET_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,4 +24,4 @@ void set_print_(struct set *s, char *name);
 
 #define set_print(s) set_print_(s, #s)
 
-#endif // MATH_SET_H
+#endif // MATRIX_SET_H

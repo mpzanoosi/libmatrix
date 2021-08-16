@@ -1,5 +1,5 @@
-#ifndef MATH_MATRIX_H
-#define MATH_MATRIX_H
+#ifndef MATRIX_MATRIX_H
+#define MATRIX_MATRIX_H
 
 #include <stdlib.h>
 #include "set.h"
@@ -15,4 +15,4 @@ struct matrix *matrix_init_labels(struct set *labels);
 
 #define matrix_get_dim_count(this) (this)->labels->dim_count
 
-#endif // MATH_MATRIX_H
+#endif // MATRIX_MATRIX_H

@@ -5,5 +5,7 @@
 !.gitignore
 !CMakeLists.txt
 !README.md
+!Doxyfile
 !*.[hc]
 !src/
+!test/

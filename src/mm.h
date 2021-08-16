@@ -1,5 +1,5 @@
-#ifndef MATH_MM_H
-#define MATH_MM_H
+#ifndef MATRIX_MM_H
+#define MATRIX_MM_H
 
 #include <string.h>
 
@@ -12,4 +12,4 @@
 
 #define free_safe(x) ({free(x); x = NULL;})
 
-#endif // MATH_MM_H
+#endif // MATRIX_MM_H

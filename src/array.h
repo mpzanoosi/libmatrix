@@ -1,5 +1,5 @@
-#ifndef MATH_ARRAY_H
-#define MATH_ARRAY_H
+#ifndef MATRIX_ARRAY_H
+#define MATRIX_ARRAY_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,4 +23,4 @@ void array_print_(struct array *a, char *name);
 
 void array_print_raw(struct array *a);
 
-#endif // MATH_ARRAY_H
+#endif // MATRIX_ARRAY_H

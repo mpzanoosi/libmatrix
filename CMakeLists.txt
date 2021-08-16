@@ -2,16 +2,16 @@
 cmake_minimum_required(VERSION 3.9)
 
 # project name
-project(libipceng)
+project(libmatrix)
 
 # versioning
-set(VERSION_MAJOR 1)
+set(VERSION_MAJOR 0)
 set(VERSION_MINOR 0)
-set(VERSION_PATCH 0)
+set(VERSION_PATCH 1)
 set(VERSION_STRING ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
 # uncomment next line to enable testing
-option(TEST "option to test ipc engine" OFF)
+option(TEST "option to test ipc engine" ON)
 
 # directories for outputs
 if(TEST)
@@ -23,32 +23,35 @@ endif()
 set(CMAKE_LIBRARY_OUTPUT_DIRACTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# making libipceng
+# making libmatrix
 set(CMAKE_C_FLAGS "-rdynamic -fPIC -g -Wformat")
 # adding source files
-add_library(ipceng	SHARED
-		"ipceng.c"
+add_library(matrix	SHARED
+		"src/backtrace.c"
+		"src/array.c"
+		"src/file.c"
 	)
 # adding properties
-set_target_properties(ipceng PROPERTIES 
-	PUBLIC_HEADER "ipceng.h"
+set_target_properties(matrix PROPERTIES 
+	PUBLIC_HEADER "src/array.h"
 	VERSION ${VERSION_STRING}
 	SOVERSION ${VERSION_MAJOR}
 	)
 # adding install method
-INSTALL(TARGETS ipceng 
+INSTALL(TARGETS matrix 
         LIBRARY DESTINATION lib/
         PUBLIC_HEADER DESTINATION include/
         LIBRARY PERMISSIONS WORLD_READ WORLD_WRITE WORLD_EXECUTE
 	)
 # actually making the library
-target_link_libraries(ipceng -lrt -ldl -lm)
+target_link_libraries(matrix -lrt -ldl -lm)
 
 # unit testing
 if(TEST)
 	# test ipc engine
-	add_executable(test_ipceng
-			"test_ipceng.c"
+	add_executable(test_array
+			"test/test_array.c"
 		)
-	target_link_libraries(test_ipceng ipceng)
+	target_include_directories(test_array PRIVATE "src/")
+	target_link_libraries(test_array matrix)
 endif()
