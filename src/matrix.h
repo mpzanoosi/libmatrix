@@ -1,18 +1,26 @@
-#ifndef MATRIX_MATRIX_H
-#define MATRIX_MATRIX_H
+#ifndef MATRIX_H
+#define MATRIX_H
 
+#include <stdio.h>
 #include <stdlib.h>
-#include "set.h"
+#include <string.h>
 
 struct matrix {
-    struct set *labels; //<! mapping of each elements of this matrix to a label (position)
-    double *values; //<! values of the matrix; dimension information can be found in label
+    size_t dim_count; //<! number of dimensions
+    size_t *dims; //<! number of elements at each dimension
+    size_t dims_all; //<! multiplication of values in 'dims'
+    double *values; //<! all elements in a vectorized array
+    double *labels; //<! inserted tags for each dimension
 };
 
-struct matrix *matrix_init_empty(size_t dim_count, size_t *counts);
+struct matrix *matrix_init_empty(size_t dim_count, size_t *dims);
 
-struct matrix *matrix_init_labels(struct set *labels);
+int matrix_destroy(struct matrix *m);
 
-#define matrix_get_dim_count(this) (this)->labels->dim_count
+char *matrix_strval_metadata(struct matrix *m);
 
-#endif // MATRIX_MATRIX_H
+void matrix_print_metadata_(struct matrix *m, char *name);
+
+#define matrix_print_metadata(m) matrix_print_metadata_(m, #m)
+
+#endif // MATRIX_H
