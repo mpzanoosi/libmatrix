@@ -1,8 +1,13 @@
 #include "matrix.h"
 #include "mm.h"
 
-int _factorial(size_t count, size_t *intvals)
+// ***** core methods ***** //
+
+size_t _pimult(size_t count, size_t *intvals)
 {
+    if (count == 0)
+        return 1;
+
     size_t i, result = 1;
     for (i = 0; i < count; i++) {
         result *= intvals[i];
@@ -15,8 +20,8 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     structinit(struct matrix, new_matrix);
     new_matrix->dim_count = dim_count;
     ptrccpy(new_matrix->dims, dims, size_t, dim_count);
-    new_matrix->dims_all = _factorial(dim_count, dims);
-    new_matrix->values = (double *)calloc(new_matrix->dims_all, sizeof(double));
+    new_matrix->e_count = _pimult(dim_count, dims);
+    new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
     new_matrix->labels = NULL;
     return new_matrix;
 }
@@ -34,6 +39,35 @@ int matrix_destroy(struct matrix *m)
     
     return 0;
 }
+
+size_t matrix_get_vidx(struct matrix *m, size_t *pos)
+{
+    // dims = [3,4,5]
+    // pos = [1,2,3]
+    // => vidx = (1-1) + (2-1)*3 + (3-1)*(3*4)
+    // algorithm: if you want to step in i-th dimension,
+    //  you should add elements count of all previous
+    //  dimensions by each step
+    //  (pos[i]-1) -> number of steps
+    //  _pimult(i, m->dims) -> number of passed elements per step in the i-th dimension
+    size_t vidx = 0;
+    int i;
+    for (i = 0; i < m->dim_count; i++) {
+        vidx += (pos[i]-1) * _pimult(i, m->dims);
+    }
+    return vidx;
+}
+
+int matrix_set_value(struct matrix *m, size_t *pos, double value)
+{
+    size_t idx = matrix_get_vidx(m, pos);
+    if (idx == -1)
+        return -1;
+    m->values[idx] = value;
+    return 0;
+}
+
+// ***** printing and stringifying ***** //
 
 char *_array_strval_size_t(size_t count, size_t *a)
 {
@@ -113,3 +147,44 @@ void matrix_print_metadata_(struct matrix *m, char *name)
     printf("%s metadata:%s\n", name, strval);
     free_safe(strval);
 }
+
+char *matrix_strval(struct matrix *m)
+{
+    // needed bytes for [3,4,5,6]:
+    //  - each element should have size of double + 1 space
+    //  - we must show 5*6 2D matrix of size [3,4]
+    //      -- each 2D matrix should have 3 extra bytes for 
+    //         '\n' character at the end of each row
+    //      -- between each 2D matrix, we print "(:,:,i,j):\n":
+    //         so we need extra (5*6-1)*(9+2*sizeof(size_t)) characters
+    //  - we add 10 bytes just for a margin (not necessary, but just to make sure)
+
+    size_t extra_dims_counts;
+    if (m->dim_count > 2) {
+        // a way to calculate 5*6 :D
+        extra_dims_counts = _pimult(m->dim_count-2, m->dims+(size_t)2);
+    } else {
+        extra_dims_counts = 1;
+    }
+
+    size_t needed_bytes = \
+        /*bytes for each element*/ (sizeof(double)+1) * m->e_count + \
+        /*bytes for '\n' characters*/ extra_dims_counts * m->dims[0] + \
+        /*bytes for between 2D matrix separators*/ (extra_dims_counts-1) * (9+2*sizeof(size_t)) +\
+        /*margin bytes*/ 10;
+    char *strval = (char *)malloc(needed_bytes);
+
+    // todo: making string depends on (dim_count > 2) ? :
+
+    size_t line_length = (sizeof(double)+1) * m->dims[1] + 5; // 5 is just for margin
+    char *line = (char *)malloc(line_length);
+    size_t separator_length = 9+2*sizeof(size_t) + 5; // 5 is just for margin
+    char *separator = (char *)malloc(separator_length);
+    
+    int i;
+    for (i = 0; i < extra_dims_counts; i++) {
+        memreset(separator, separator_length);
+    }
+}
+
+void matrix_print_(struct matrix *m, char *name);
