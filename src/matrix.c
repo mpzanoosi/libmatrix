@@ -71,42 +71,70 @@ int matrix_set_value(struct matrix *m, size_t *pos, double value)
 
 char *_array_strval_size_t(size_t count, size_t *a)
 {
-    if (!a) {
-        return strdup("[]");
+    if (!a || count < 1) {
+        return strdup("");
     }
 
-    char temp[20] = {0};
-    char *strval = strdup("[");
+    char *strval; // output of this function
+    char temp[50]; // for holding a number
+
+    // making string out of an 1D matrix = an array
+    // style: e1,e2,...,eN
+    //        for each double we reserve 32 bytes
+    //        there is count-1 extra characters for ',' characters
+    // 
+    // IMPORTANT NOTE: are 50 bytes for temp and 32 bytes for holding a double enough?
+    // answer: NO! it should be handled generally
+    //         google "double maximum string size" and see stackoverflow why!
+    //         however, the answer in that stackoverflow seems to be wrong!!!
+    strval = (char *)malloc(32*count + (count-1));
     int i;
     for (i = 0; i < count-1; i++) {
         memreset(temp, sizeof(temp));
-        sprintf(temp, "%zu, ", a[i]);
+        sprintf(temp, "%zu,", a[i]);
         strcat(strval, temp);
     }
     memreset(temp, sizeof(temp));
-    sprintf(temp, "%zu]", a[count-1]);
+    sprintf(temp, "%zu", a[count-1]);
     strcat(strval, temp);
     return strval;
 }
 
-char *_array_strval_double(size_t count, double *a)
+char *_array_strval(double *a, size_t count)
 {
-    if (!a) {
-        return strdup("[]");
+    if (!a || count < 1) {
+        return strdup("");
     }
 
-    char temp[20] = {0};
-    char *strval = strdup("[");
+    char *strval; // output of this function
+    char temp[50]; // for holding a number
+
+    // making string out of an 1D matrix = an array
+    // style: 
+    // 
+    // for each double we reserve 32 bytes
+    // there is count-1 extra characters for ',' characters
+    // 
+    // IMPORTANT NOTE: are 50 bytes for temp and 32 bytes for holding a double enough?
+    // answer: NO! it should be handled generally
+    //         google "double maximum string size" and see stackoverflow why!
+    //         however, the answer in that stackoverflow seems to be wrong!!!
+    strval = (char *)malloc(32*count + (count-1));
     int i;
     for (i = 0; i < count-1; i++) {
         memreset(temp, sizeof(temp));
-        sprintf(temp, "%f, ", a[i]);
+        sprintf(temp, "%f,", a[i]);
         strcat(strval, temp);
     }
     memreset(temp, sizeof(temp));
-    sprintf(temp, "%f]", a[count-1]);
+    sprintf(temp, "%f", a[count-1]);
     strcat(strval, temp);
     return strval;
+}
+
+char *_array_strval_idxs(double *a, size_t *idxs, size_t count)
+{
+
 }
 
 char *_matrix_strval_metadata(struct matrix *m, char *delimiter)
@@ -121,14 +149,14 @@ char *_matrix_strval_metadata(struct matrix *m, char *delimiter)
     strcat(strval, temp);
 
     memreset(temp, 100);
-    temp2 = _array_strval_size_t(m->dim_count, m->dims);
-    sprintf(temp, "dims = %s%s", temp2, delimiter);
+    temp2 = _array_strval_size_t(m->dims, m->dim_count);
+    sprintf(temp, "dims = [%s]%s", temp2, delimiter);
     free_safe(temp2);
     strcat(strval, temp);
 
     memreset(temp, 100);
-    temp2 = _array_strval_double(m->dim_count, m->labels);
-    sprintf(temp, "labels = %s%s", temp2, delimiter);
+    temp2 = _array_strval(m->labels, m->dim_count);
+    sprintf(temp, "labels = [%s]%s", temp2, delimiter);
     free_safe(temp2);
     strcat(strval, temp);
 
@@ -148,43 +176,90 @@ void matrix_print_metadata_(struct matrix *m, char *name)
     free_safe(strval);
 }
 
-char *matrix_strval(struct matrix *m)
+void matrix_get_vidxs_row(struct matrix *m, size_t row, size_t *idxs)
 {
-    // needed bytes for [3,4,5,6]:
-    //  - each element should have size of double + 1 space
-    //  - we must show 5*6 2D matrix of size [3,4]
-    //      -- each 2D matrix should have 3 extra bytes for 
-    //         '\n' character at the end of each row
-    //      -- between each 2D matrix, we print "(:,:,i,j):\n":
-    //         so we need extra (5*6-1)*(9+2*sizeof(size_t)) characters
-    //  - we add 10 bytes just for a margin (not necessary, but just to make sure)
 
-    size_t extra_dims_counts;
-    if (m->dim_count > 2) {
-        // a way to calculate 5*6 :D
-        extra_dims_counts = _pimult(m->dim_count-2, m->dims+(size_t)2);
-    } else {
-        extra_dims_counts = 1;
-    }
-
-    size_t needed_bytes = \
-        /*bytes for each element*/ (sizeof(double)+1) * m->e_count + \
-        /*bytes for '\n' characters*/ extra_dims_counts * m->dims[0] + \
-        /*bytes for between 2D matrix separators*/ (extra_dims_counts-1) * (9+2*sizeof(size_t)) +\
-        /*margin bytes*/ 10;
-    char *strval = (char *)malloc(needed_bytes);
-
-    // todo: making string depends on (dim_count > 2) ? :
-
-    size_t line_length = (sizeof(double)+1) * m->dims[1] + 5; // 5 is just for margin
-    char *line = (char *)malloc(line_length);
-    size_t separator_length = 9+2*sizeof(size_t) + 5; // 5 is just for margin
-    char *separator = (char *)malloc(separator_length);
-    
-    int i;
-    for (i = 0; i < extra_dims_counts; i++) {
-        memreset(separator, separator_length);
-    }
 }
 
-void matrix_print_(struct matrix *m, char *name);
+char *_matrix_strval_2d(struct matrix *m)
+{
+    char *strval; // output of this function
+    char *line; // for each line
+
+    // making string out of 2D matrix
+    // style: 
+    // e11,e12,...,e1N
+    // e21,e22,...,e2N
+    // ...
+    // eM1,eM2,...,eMN
+    // 
+    // - 32+1 bytes for each element including ',' and end of line '\n' characters
+    //   todo question: is 32+1 bytes sufficient?!
+    size_t needed_bytes = (32+1) * m->e_count;
+    strval = (char *)malloc(needed_bytes);
+    size_t M = m->dims[0], N = m->dims[1];
+    size_t *idxs = (size_t *)malloc(N * sizeof(size_t));
+    size_t i;
+    for (i = 1; i < M; i++) {
+        matrix_get_vidxs_row(m, i, idxs);
+        line = _array_strval_idxs(m->values, idxs, N);
+        strcat(strval, line);
+        free_safe(line);
+    }
+    return strval;
+}
+
+char *matrix_strval(struct matrix *m)
+{
+    char *strval; // output of this function
+    char temp[50]; // for holding a number
+
+    if (m->dim_count < 1) {
+        strval = strdup("");
+    } else if (m->dim_count == 1) {
+        // making string out of a 1D matrix = an array
+        strval = _array_strval(m->values, m->e_count);
+    } else if (m->dim_count == 2) {
+        // making string out of a 2D matrix
+        strval = _matrix_strval_2d(m);
+    } else {
+        // example:
+        // needed bytes for matirx with dims = [3,4,5,6]:
+        //  - each element should have size of double + 1 space
+        //  - we must show 5*6 2D matrix of size [3,4]
+        //      -- each 2D matrix should have 3 extra bytes for 
+        //         '\n' character at the end of each row
+        //      -- between each 2D matrix, we print "(:,:,i,j):\n":
+        //         so we need extra (5*6-1)*(9+2*sizeof(size_t)) characters
+        //         9 = number of characters of "(:,:,,):\n"
+        //  - we add 10 bytes just for a margin (not necessary, but just to make sure)
+        //
+        // a way to calculate 5*6 :D
+        size_t extra_dims_counts = _pimult(m->dim_count-2, m->dims+2);
+        size_t needed_bytes = \
+            /*bytes for each element*/ (sizeof(double)+1) * m->e_count + \
+            /*bytes for '\n' characters*/ extra_dims_counts * m->dims[0] + \
+            /*bytes for between 2D matrix separators*/ (extra_dims_counts-1) * (9+2*sizeof(size_t)) +\
+            /*margin bytes*/ 10;
+        strval = (char *)malloc(needed_bytes);
+
+        size_t line_length = (sizeof(double)+1) * m->dims[1] + 5; // 5 is just for margin
+        char *line = (char *)malloc(line_length);
+        size_t separator_length = 9+2*sizeof(size_t) + 5; // 5 is just for margin
+        char *separator = (char *)malloc(separator_length);
+        
+        int i;
+        for (i = 0; i < extra_dims_counts; i++) {
+            memreset(separator, separator_length);
+            // todo: fill this loop
+        }
+    }
+    return strval;
+}
+
+void matrix_print_(struct matrix *m, char *name)
+{
+    char *strval = matrix_strval(m);
+    printf("%s:\n%s\n", name, strval);
+    free_safe(strval);
+}

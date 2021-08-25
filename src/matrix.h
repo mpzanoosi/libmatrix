@@ -21,6 +21,8 @@ int matrix_destroy(struct matrix *m);
 
 size_t matrix_get_vidx(struct matrix *m, size_t *pos); // index of vectorized matrix m
 
+void matrix_get_vidxs_row(struct matrix *m, size_t *idxs, size_t row); // vectorized indexes of a row
+
 int matrix_set_value(struct matrix *m, size_t *pos, double value);
 
 // ***** printing and stringifying ***** //
