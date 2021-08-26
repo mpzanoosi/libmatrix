@@ -42,6 +42,6 @@ int matrix_2D_test()
 
 int main()
 {
-    matrix_1D_test();
+    matrix_2D_test();
     return 0;
 }
