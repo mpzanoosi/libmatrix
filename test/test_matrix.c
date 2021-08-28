@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "matrix.h"
 
 int matrix_1D_test()
@@ -40,8 +39,23 @@ int matrix_2D_test()
     return 0;
 }
 
+int matrix_1D_test2()
+{
+    // M[i] = sin(t[i]) for t = 0:pi/100:pi
+    // struct matrix *t = matrix_range(0, M_PI, M_PI/100);
+    // size_t dim_count = 1;
+    // struct matrix *m1 = matrix_init_empty_range(dim_count, &t);
+    // matrix_calc_by_labels(m1, matrix_sin);
+    // matrix_print_metadata(m1);
+    // matrix_print(m1);
+    // matrix_destroy(m1);
+    return 0;
+}
+
 int main()
 {
+    matrix_1D_test();
+    // matrix_1D_test2();
     matrix_2D_test();
     return 0;
 }

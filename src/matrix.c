@@ -13,7 +13,7 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     ptrccpy(new_matrix->dims, dims, size_t, dim_count);
     new_matrix->e_count = helper_pimult(dim_count, dims);
     new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
-    new_matrix->labels = NULL;
+    new_matrix->labels = (double **)calloc(dim_count, sizeof(double *));
     return new_matrix;
 }
 
@@ -22,6 +22,10 @@ int matrix_destroy(struct matrix *m)
     if (!m)
         return 0;
     
+    size_t i;
+    for (i = 0; i < m->dim_count; i++) {
+        free_safe(m->labels[i]);
+    }
     free_safe(m->labels);
     free_safe(m->values);
     free_safe(m->dims);
@@ -38,6 +42,18 @@ int matrix_set_value(struct matrix *m, size_t *pos, double value)
         return -1;
     m->values[vidx] = value;
     return 0;
+}
+
+struct matrix *matrix_range(double x1, double x2, double dx)
+{
+    size_t count = floor((x2-x1)/dx) + 1;
+    if (count < 1)
+        return NULL;
+
+    size_t dim_count = 1;
+    size_t dims[1];
+    dims[0] = count;
+    struct matrix *m = matrix_init_empty(dim_count, dims);
 }
 
 // ***** printing and stringifying ***** //
@@ -69,6 +85,7 @@ char *matrix_strval_2d(struct matrix *m)
         strcat(strval, "\n");
         free_safe(line);
     }
+    strval[strlen(strval)-1] = '\0';
     free_safe(vidxs);
     return strval;
 }
@@ -145,11 +162,12 @@ char *matrix_strval_metadata(struct matrix *m)
     free_safe(temp2);
     strcat(strval, temp);
 
-    memreset(temp, 100);
-    temp2 = array_strval(m->labels, m->dim_count);
-    sprintf(temp, "labels = [%s]", temp2);
-    free_safe(temp2);
-    strcat(strval, temp);
+    // todo: print labels based on double ** pointer
+    // memreset(temp, 100);
+    // temp2 = array_strval(m->labels[i], m->dims[i]);
+    // sprintf(temp, "labels = [%s]", temp2);
+    // free_safe(temp2);
+    // strcat(strval, temp);
 
     free_safe(temp);
     return strval;
