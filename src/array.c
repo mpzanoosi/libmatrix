@@ -13,22 +13,23 @@ char *array_strval(double *a, size_t count)
     char *strval; // output of this function
     char temp[50]; // for holding a number
 
-    // making string out of an 1D matrix = an array
+    // making string out of a 1D matrix = an array
     // style: 
     // 
     // for each double we reserve 32 bytes
-    // there is count-1 extra characters for ',' characters
+    // there is count-1 extra characters for space characters
+    // (characters between numbers)
     // 
     // IMPORTANT NOTE: are 50 bytes for temp and 32 bytes for holding a double enough?
     // answer: NO! it should be handled generally
     //         google "double maximum string size" and see stackoverflow why!
     //         however, the answer in that stackoverflow seems to be wrong!!!
     //         this is a floating point representation issue.
-    strval = (char *)malloc(32*count + (count-1));
+    strval = (char *)calloc(32*count + (count-1), sizeof(char));
     int i;
     for (i = 0; i < count-1; i++) {
         memreset(temp, sizeof(temp));
-        sprintf(temp, "%." STR(PREC) "f\t", a[i]);
+        sprintf(temp, "%." STR(PREC) "f, ", a[i]);
         strcat(strval, temp);
     }
     memreset(temp, sizeof(temp));

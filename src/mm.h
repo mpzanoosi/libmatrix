@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #define structinit(type, name) \
-        type *name = (type *)malloc(sizeof(type))
+    type *name = (type *)malloc(sizeof(type))
 
 #define structdup(obj) ({ \
     structinit(typeof(*obj), obj##_copy); \
@@ -13,8 +13,8 @@
 
 #define free_safe(x) ({free(x); x = NULL;})
 
-#define ptrccpy(dst, src, type, count) \
-    ({dst = (type *)calloc(count, sizeof(type)); \
+#define ptrccpy(dst, src, type, count) ({ \
+    dst = (type *)calloc(count, sizeof(type)); \
     int i; \
     for (i = 0; i < count; i++) { \
         dst[i] = src[i]; \

@@ -18,13 +18,19 @@ struct matrix {
 
 struct matrix *matrix_init_empty(size_t dim_count, size_t *dims);
 
+struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **ranges);
+
 int matrix_destroy(struct matrix *m);
 
 int matrix_set_value(struct matrix *m, size_t *pos, double value);
 
+int matrix_set_label_by_range(struct matrix *m, size_t dim, struct matrix *range);
+
 struct matrix *matrix_range(double x1, double x2, double dx);
 
-// ***** printing and stringifying ***** //
+struct matrix *matrix_linspace(double x1, double x2, size_t count);
+
+// ***** making strings and printing ***** //
 
 char *matrix_strval(struct matrix *m);
 

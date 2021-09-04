@@ -14,6 +14,29 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     new_matrix->e_count = helper_pimult(dim_count, dims);
     new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
     new_matrix->labels = (double **)calloc(dim_count, sizeof(double *));
+    // "he is beginning to believe"
+    return new_matrix;
+}
+
+struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **ranges)
+{
+    // making an empty matrix with dimensions based on 
+    // elements of each range
+    // each range is supposed to be the label of each
+    // dimension
+
+    // making an empty matrix with proper dimensions
+    size_t *dims = (size_t *)calloc(dim_count, sizeof(size_t));
+    size_t i;
+    for (i = 0; i < dim_count; i++) {
+        dims[i] = ranges[i]->e_count;
+    }
+    struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
+    free_safe(dims);
+    // now setting labels of the new matrix based on each range
+    for (i = 0; i < dim_count; i++) {
+        matrix_set_label_by_range(new_matrix, i, ranges[i]);
+    }
     return new_matrix;
 }
 
@@ -31,7 +54,6 @@ int matrix_destroy(struct matrix *m)
     free_safe(m->dims);
     free_safe(m);
     // why Mr. Anderson, why?!
-    
     return 0;
 }
 
@@ -44,9 +66,20 @@ int matrix_set_value(struct matrix *m, size_t *pos, double value)
     return 0;
 }
 
+int matrix_set_label(struct matrix *m, size_t dim, double *label)
+{
+    ptrccpy(m->labels[dim], label, double, m->dims[dim]);
+    return 0;
+}
+
+int matrix_set_label_by_range(struct matrix *m, size_t dim, struct matrix *range)
+{
+    return matrix_set_label(m, dim, range->values);
+}
+
 struct matrix *matrix_range(double x1, double x2, double dx)
 {
-    size_t count = floor((x2-x1)/dx) + 1;
+    size_t count = ceil((x2-x1)/dx) + 1;
     if (count < 1)
         return NULL;
 
@@ -54,6 +87,19 @@ struct matrix *matrix_range(double x1, double x2, double dx)
     size_t dims[1];
     dims[0] = count;
     struct matrix *m = matrix_init_empty(dim_count, dims);
+    size_t i = 0;
+    double last_value = x1;
+    do {
+        m->values[i] = last_value;
+        last_value += dx;
+        i++;
+    } while (i < count);
+    return m;
+}
+
+struct matrix *matrix_linspace(double x1, double x2, size_t count)
+{
+    return matrix_range(x1, x2, (x2-x1)/(count-1));
 }
 
 // ***** printing and stringifying ***** //
@@ -148,34 +194,45 @@ void matrix_print(struct matrix *m)
 char *matrix_strval_metadata(struct matrix *m)
 {
     // fixme: what if metadata string goes beyond 1000 bytes?!
+    // fixme: what if temp goes beyond 100 bytes?!
+    // confusion of the highest orda!
     char *strval = (char *)malloc(1000);
-    char *temp = (char *)malloc(100);
-    char *temp2;
+    char temp[100];
+    char *temp2, *temp3;
 
+    // dim_count
     memreset(temp, 100);
     sprintf(temp, "dim_count = %zu\n", m->dim_count);
     strcat(strval, temp);
 
+    // dims
     memreset(temp, 100);
     temp2 = array_strval_size_t(m->dims, m->dim_count);
     sprintf(temp, "dims = [%s]\n", temp2);
     free_safe(temp2);
     strcat(strval, temp);
 
-    // todo: print labels based on double ** pointer
-    // memreset(temp, 100);
-    // temp2 = array_strval(m->labels[i], m->dims[i]);
-    // sprintf(temp, "labels = [%s]", temp2);
-    // free_safe(temp2);
-    // strcat(strval, temp);
-
-    free_safe(temp);
+    // labels
+    size_t i;
+    for (i = 0; i < m->dim_count; i++) {
+        if (m->labels[i]) {
+            temp2 = array_strval(m->labels[i], m->dims[i]);
+            temp3 = (char *)calloc(100 + strlen(temp2), sizeof(char));
+            sprintf(temp3, "labels[%zu] = [%s]\n", i, temp2);
+            free_safe(temp2);
+            strcat(strval, temp3);
+            free_safe(temp3);
+        } else {
+            sprintf(temp, "labels[%zu] = []\n", i);
+            strcat(strval, temp);
+        }
+    }
     return strval;
 }
 
 void matrix_print_metadata(struct matrix *m)
 {
     char *strval = matrix_strval_metadata(m);
-    printf("%s\n", strval);
+    printf("%s", strval);
     free_safe(strval);
 }
