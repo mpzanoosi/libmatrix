@@ -14,6 +14,8 @@ struct matrix {
     double **labels; //<! inserted tags for each dimension
 };
 
+typdef int (*matrix_func)(struct matrix *);
+
 // ***** core methods ***** //
 
 struct matrix *matrix_init_empty(size_t dim_count, size_t *dims);
@@ -29,6 +31,12 @@ int matrix_set_label_by_range(struct matrix *m, size_t dim, struct matrix *range
 struct matrix *matrix_range(double x1, double x2, double dx);
 
 struct matrix *matrix_linspace(double x1, double x2, size_t count);
+
+int matrix_calc_by_labels(struct matrix *m, matrix_func f);
+
+// ***** mathematical functions ***** //
+
+int matrix_sin(struct matrix *m);
 
 // ***** making strings and printing ***** //
 
