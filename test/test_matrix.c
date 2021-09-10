@@ -5,7 +5,7 @@ int matrix_1D_test1()
     // M[i] = i^2
     size_t dim_count = 1;
     size_t dims[] = {6};
-    struct matrix *m1 = matrix_init_empty(dim_count, dims);
+    struct matrix *m1 = matrix_init(dim_count, dims);
     size_t pos[1];
     int i;
     for (i = 1; i <= 6; i++) {
@@ -24,7 +24,7 @@ int matrix_2D_test2()
     // M[i,j] = 2*i + j^2
     size_t dim_count = 2;
     size_t dims[] = {6,3};
-    struct matrix *m1 = matrix_init_empty(dim_count, dims);
+    struct matrix *m1 = matrix_init(dim_count, dims);
     size_t pos[2];
     int i, j;
     for (i = 1; i <= 6; i++) {
@@ -44,37 +44,15 @@ int matrix_2D_test2()
 int matrix_1D_test2()
 {
     // M[i] = sin(t[i]) for t = 0:pi/100:pi
-    struct matrix *t = matrit(0, M_PI, M_PI/100); // -> produces 101 numbers
-    // matrix_print_metadata(t);
-    // matrix_print(t);
+    struct matrix *t = matrix_range(0, MATRIX_PI, MATRIX_PI/100); // -> produces 101 numbers
     size_t dim_count = 1;
     struct matrix *m1 = matrix_init_empty_labels(dim_count, &t);
-    matrix_calc_by_labels(m1, matrix_sin);
+    struct matrix *result1 = matrix_sin(m1);
     matrix_print_metadata(m1);
-    matrix_destroy(t);
-    matrix_destroy(m1);
-    return 0;
-}
-
-int matrix_2D_test2()
-{
-    // f(x,y) = sin(x) * cos(y) for x = 0:pi/100:pi, y = linspace(0, 10, 5)
-    struct matrix *x_range = matrix_range(0, M_PI, M_PI/100); // -> produces 101 numbers
-    struct matrix *y_range = matrix_linspace(0, 10, 5); // -> produces 100 numbers
-    struct matrix *r[2];
-    r[0] = x_range;
-    r[1] = y_range;
-    
-    size_t dim_count = 2;
-    struct matrix *m1 = matrix_init_empty_labels(dim_count, r);
-    // matrix_calc_by_labels(m1, matrix_sin);
-    matrix_print_metadata(m1);
-
-    // matrix_print(x_range);
-    // matrix_print(y_range);
-    matrix_destroy(x_range);
-    matrix_destroy(y_range);
-    matrix_destroy(m1);
+    matrix_print(m1);
+    matrix_print_metadata(result1);
+    matrix_print(result1);
+    matrix_destroy_batch(3, result1, m1, t);
     return 0;
 }
 

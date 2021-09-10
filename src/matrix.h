@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdarg.h>
+
+// ***** numerical constants ***** //
+#define MATRIX_PI   M_PI
 
 struct matrix {
     size_t dim_count; //<! number of dimensions
@@ -14,15 +18,23 @@ struct matrix {
     double **labels; //<! inserted tags for each dimension
 };
 
-typdef int (*matrix_func)(struct matrix *);
+typedef struct matrix *(*matrix_func)(struct matrix *);
 
 // ***** core methods ***** //
 
 struct matrix *matrix_init_empty(size_t dim_count, size_t *dims);
 
-struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **ranges);
+struct matrix *matrix_init(size_t dim_count, size_t *dims);
+
+struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels);
+
+struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels);
 
 int matrix_destroy(struct matrix *m);
+
+int matrix_destroy_batch(int count, ...);
+
+struct matrix *matrix_dup(struct matrix *m);
 
 int matrix_set_value(struct matrix *m, size_t *pos, double value);
 
@@ -32,11 +44,15 @@ struct matrix *matrix_range(double x1, double x2, double dx);
 
 struct matrix *matrix_linspace(double x1, double x2, size_t count);
 
-int matrix_calc_by_labels(struct matrix *m, matrix_func f);
+int matrix_calc_by_labels(matrix_func f, struct matrix *m);
+
+int matrix_calc(matrix_func f, struct matrix *m);
 
 // ***** mathematical functions ***** //
 
-int matrix_sin(struct matrix *m);
+struct matrix *matrix_func_(struct matrix *m, double (*f)(double));
+
+#define matrix_sin(m) matrix_func_(m, sin)
 
 // ***** making strings and printing ***** //
 

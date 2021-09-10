@@ -12,31 +12,49 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     new_matrix->dim_count = dim_count;
     ptrccpy(new_matrix->dims, dims, size_t, dim_count);
     new_matrix->e_count = helper_pimult(dim_count, dims);
-    new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
-    new_matrix->labels = (double **)calloc(dim_count, sizeof(double *));
+    new_matrix->values = NULL;
+    new_matrix->labels = NULL;
     // "he is beginning to believe"
     return new_matrix;
 }
 
-struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **ranges)
+struct matrix *matrix_init(size_t dim_count, size_t *dims)
+{
+    struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
+    new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
+    new_matrix->labels = (double **)calloc(dim_count, sizeof(double *));
+    // "he is beginning to believe again!"
+    return new_matrix;
+}
+
+struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels)
 {
     // making an empty matrix with dimensions based on 
     // elements of each range
     // each range is supposed to be the label of each
     // dimension
 
-    // making an empty matrix with proper dimensions
+    // making an empty matrix with proper dimensions according to
+    // 'labels' element count
     size_t *dims = (size_t *)calloc(dim_count, sizeof(size_t));
     size_t i;
     for (i = 0; i < dim_count; i++) {
-        dims[i] = ranges[i]->e_count;
+        dims[i] = labels[i]->e_count;
     }
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
+    new_matrix->labels = (double **)calloc(dim_count, sizeof(double *));
     free_safe(dims);
-    // now setting labels of the new matrix based on each range
+    // now setting labels of the new matrix based on 'labels'
     for (i = 0; i < dim_count; i++) {
-        matrix_set_label_by_range(new_matrix, i, ranges[i]);
+        matrix_set_label_by_range(new_matrix, i, labels[i]);
     }
+    return new_matrix;
+}
+
+struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels)
+{
+    struct matrix *new_matrix = matrix_init_empty_labels(dim_count, labels);
+    new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
     return new_matrix;
 }
 
@@ -55,6 +73,35 @@ int matrix_destroy(struct matrix *m)
     free_safe(m);
     // why Mr. Anderson, why?!
     return 0;
+}
+
+int matrix_destroy_batch(int count, ...)
+{
+    struct matrix *m;
+    int i;
+    va_list ap;
+    // loop to destroy all 
+    va_start(ap, count);
+        m = va_arg(ap, struct matrix *);
+        matrix_destroy(m);
+    va_end(ap);
+    return 0;
+}
+
+struct matrix *matrix_dup(struct matrix *m)
+{
+    // making a duplicate without considering pointers contents
+    struct matrix *m_copy = structdup(m);
+    // making duplicate out of pointers contents
+    ptrccpy(m_copy->dims, m->dims, size_t, m->dim_count);
+    ptrccpy(m_copy->values, m->values, double, m->e_count);
+    ptrccpy(m_copy->labels, m->labels, double *, m->dim_count);
+    int i;
+    for (i = 1; i < m->dim_count; i++) {
+        ptrccpy(m_copy->labels[i], m->labels[i], double, m->dims[i]);
+    }
+    // question: it would be more beautiful if we behaved 'labels' same as 'values'
+    //           wouldn't it?!
 }
 
 int matrix_set_value(struct matrix *m, size_t *pos, double value)

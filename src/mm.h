@@ -15,9 +15,9 @@
 
 #define ptrccpy(dst, src, type, count) ({ \
     dst = (type *)calloc(count, sizeof(type)); \
-    int i; \
-    for (i = 0; i < count; i++) { \
-        dst[i] = src[i]; \
+    int i##_copy; \
+    for (i##_copy = 0; i##_copy < count; i##_copy++) { \
+        dst[i##_copy] = src[i##_copy]; \
     }})
 
 #define memreset(ptr, count) memset(ptr, 0, count)
