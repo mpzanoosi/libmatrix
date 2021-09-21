@@ -18,7 +18,7 @@
 // after vectorizing: 
 //     e11,e21,...,eM1,e12,e22,...,eM2,...,e1N,e2N,...,eMN
 // 
-// pos is the (i,j) position and vidx is the index of pos in the 
+// pos is the (i,j) position and vidx is its index in the 
 // vectorized matrix
 
 size_t vidx_pos(struct matrix *m, size_t *pos); // vectorized index of a positions

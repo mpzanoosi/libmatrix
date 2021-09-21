@@ -12,6 +12,7 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     new_matrix->dim_count = dim_count;
     ptrccpy(new_matrix->dims, dims, size_t, dim_count);
     new_matrix->e_count = helper_pimult(dim_count, dims);
+    new_matrix->l_count = helper_sigmasum(dim_count, dims);
     new_matrix->values = NULL;
     new_matrix->labels = NULL;
     // "he is beginning to believe"
@@ -22,32 +23,30 @@ struct matrix *matrix_init(size_t dim_count, size_t *dims)
 {
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
     new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
-    new_matrix->labels = (double **)calloc(dim_count, sizeof(double *));
+    new_matrix->labels = (double *)calloc(new_matrix->l_count, sizeof(double));
     // "he is beginning to believe again!"
     return new_matrix;
 }
 
 struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels)
 {
-    // making an empty matrix with dimensions based on 
-    // elements of each range
-    // each range is supposed to be the label of each
-    // dimension
+    // making an empty matrix with dimensions based on 'labels':
+    //  - labels[i]->e_count is supposed to be ith dimension element count
+    //  - labels[i]->values is supposed to be label of ith dimension
 
-    // making an empty matrix with proper dimensions according to
-    // 'labels' element count
-    size_t *dims = (size_t *)calloc(dim_count, sizeof(size_t));
-    size_t i;
-    for (i = 0; i < dim_count; i++) {
-        dims[i] = labels[i]->e_count;
-    }
+    // making an empty matrix with proper dimensions according to 'labels'
+    size_t *dims;
+    ptrccpy_element(dims, labels, e_count, size_t, dim_count);
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
-    new_matrix->labels = (double **)calloc(dim_count, sizeof(double *));
     free_safe(dims);
+    new_matrix->labels = (double *)calloc(new_matrix->l_count, sizeof(double));
+
     // now setting labels of the new matrix based on 'labels'
+    int i;
     for (i = 0; i < dim_count; i++) {
         matrix_set_label_by_range(new_matrix, i, labels[i]);
     }
+
     return new_matrix;
 }
 
@@ -62,15 +61,12 @@ int matrix_destroy(struct matrix *m)
 {
     if (!m)
         return 0;
-    
-    size_t i;
-    for (i = 0; i < m->dim_count; i++) {
-        free_safe(m->labels[i]);
-    }
+
     free_safe(m->labels);
     free_safe(m->values);
     free_safe(m->dims);
     free_safe(m);
+
     // why Mr. Anderson, why?!
     return 0;
 }
@@ -113,9 +109,24 @@ int matrix_set_value(struct matrix *m, size_t *pos, double value)
     return 0;
 }
 
+size_t matrix_label_offset(struct matrix *m, size_t dim)
+{
+    // example: in a 3x6x4x8 matrix
+    // offset of 1st dimension label is 0
+    // offset of 2nd dimension label is 3 = m->dims[0]
+    // offset of 3rd dimension label is 3+6 = m->dims[0] + m->dims[1]
+    // offset of 4th dimension label is 3+6+4 = m->dims[0] + m->dims[1] + m->dims[2]
+    return helper_sigmasum(dim-1, m->dims);
+}
+
 int matrix_set_label(struct matrix *m, size_t dim, double *label)
 {
-    ptrccpy(m->labels[dim], label, double, m->dims[dim]);
+    size_t offset = matrix_label_offset(m, dim);
+    size_t count = m->dims[dim];
+    size_t i;
+    for (i = 0; i < count; i++) {
+        *(m->labels + offset + i) = label[i];
+    }
     return 0;
 }
 

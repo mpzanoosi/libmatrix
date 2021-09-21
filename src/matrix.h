@@ -14,8 +14,9 @@ struct matrix {
     size_t dim_count; //<! number of dimensions
     size_t *dims; //<! number of elements at each dimension
     size_t e_count; //<! total # elements = multiplication of values in 'dims'
+    size_t l_count; //<! total # labels = sum of values in 'dims'
     double *values; //<! all elements in a vectorized array
-    double **labels; //<! inserted tags for each dimension
+    double *labels; //<! inserted tags for each dimension
 };
 
 typedef struct matrix *(*matrix_func)(struct matrix *);

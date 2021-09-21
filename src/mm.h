@@ -15,9 +15,16 @@
 
 #define ptrccpy(dst, src, type, count) ({ \
     dst = (type *)calloc(count, sizeof(type)); \
-    int i##_copy; \
-    for (i##_copy = 0; i##_copy < count; i##_copy++) { \
-        dst[i##_copy] = src[i##_copy]; \
+    int i; \
+    for (i = 0; i < count; i++) { \
+        dst[i] = src[i]; \
+    }})
+
+#define ptrccpy_element(dst, ptr_src, ptr_element, type, count) ({ \
+    dst = (type *)calloc(count, sizeof(type)); \
+    int i; \
+    for (i = 0; i < count; i++) { \
+        dst[i] = ptr_src[i]->ptr_element; \
     }})
 
 #define memreset(ptr, count) memset(ptr, 0, count)
