@@ -11,10 +11,10 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     structinit(struct matrix, new_matrix);
     new_matrix->dim_count = dim_count;
     ptrccpy(new_matrix->dims, dims, size_t, dim_count);
-    new_matrix->e_count = helper_pimult(dim_count, dims);
-    new_matrix->l_count = helper_sigmasum(dim_count, dims);
-    new_matrix->values = NULL;
-    new_matrix->labels = NULL;
+    new_matrix->e_count = 0;
+    new_matrix->e = NULL;
+    new_matrix->l_count = 0;
+    new_matrix->l = NULL;
     // "he is beginning to believe"
     return new_matrix;
 }
@@ -22,8 +22,8 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
 struct matrix *matrix_init(size_t dim_count, size_t *dims)
 {
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
-    new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
-    new_matrix->labels = (double *)calloc(new_matrix->l_count, sizeof(double));
+    new_matrix->e_count = helper_pimult(dim_count, dims);
+    new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     // "he is beginning to believe again!"
     return new_matrix;
 }
@@ -32,14 +32,15 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
 {
     // making an empty matrix with dimensions based on 'labels':
     //  - labels[i]->e_count is supposed to be ith dimension element count
-    //  - labels[i]->values is supposed to be label of ith dimension
+    //  - labels[i]->e is supposed to be label of ith dimension
 
     // making an empty matrix with proper dimensions according to 'labels'
     size_t *dims;
     ptrccpy_element(dims, labels, e_count, size_t, dim_count);
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
     free_safe(dims);
-    new_matrix->labels = (double *)calloc(new_matrix->l_count, sizeof(double));
+    new_matrix->l_count = helper_sigmasum(dim_count, dims);
+    new_matrix->l = (double *)calloc(new_matrix->l_count, sizeof(double));
 
     // now setting labels of the new matrix based on 'labels'
     int i;
@@ -53,7 +54,8 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
 struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels)
 {
     struct matrix *new_matrix = matrix_init_empty_labels(dim_count, labels);
-    new_matrix->values = (double *)calloc(new_matrix->e_count, sizeof(double));
+    new_matrix->e_count = helper_pimult(dim_count, new_matrix->dims);
+    new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     return new_matrix;
 }
 
@@ -62,8 +64,8 @@ int matrix_destroy(struct matrix *m)
     if (!m)
         return 0;
 
-    free_safe(m->labels);
-    free_safe(m->values);
+    free_safe(m->l);
+    free_safe(m->e);
     free_safe(m->dims);
     free_safe(m);
 
@@ -90,22 +92,16 @@ struct matrix *matrix_dup(struct matrix *m)
     struct matrix *m_copy = structdup(m);
     // making duplicate out of pointers contents
     ptrccpy(m_copy->dims, m->dims, size_t, m->dim_count);
-    ptrccpy(m_copy->values, m->values, double, m->e_count);
-    ptrccpy(m_copy->labels, m->labels, double *, m->dim_count);
-    int i;
-    for (i = 1; i < m->dim_count; i++) {
-        ptrccpy(m_copy->labels[i], m->labels[i], double, m->dims[i]);
-    }
-    // question: it would be more beautiful if we behaved 'labels' same as 'values'
-    //           wouldn't it?!
+    ptrccpy(m_copy->e, m->e, double, m->e_count);
+    ptrccpy(m_copy->l, m->l, double, m->l_count);
 }
 
-int matrix_set_value(struct matrix *m, size_t *pos, double value)
+int matrix_set_element(struct matrix *m, size_t *pos, double value)
 {
     size_t vidx = vidx_pos(m, pos);
     if (vidx == -1)
         return -1;
-    m->values[vidx] = value;
+    m->e[vidx] = value;
     return 0;
 }
 
@@ -119,20 +115,20 @@ size_t matrix_label_offset(struct matrix *m, size_t dim)
     return helper_sigmasum(dim-1, m->dims);
 }
 
-int matrix_set_label(struct matrix *m, size_t dim, double *label)
+int matrix_set_labels(struct matrix *m, size_t dim, double *l)
 {
     size_t offset = matrix_label_offset(m, dim);
     size_t count = m->dims[dim];
     size_t i;
     for (i = 0; i < count; i++) {
-        *(m->labels + offset + i) = label[i];
+        m->l[offset + i] = l[i];
     }
     return 0;
 }
 
 int matrix_set_label_by_range(struct matrix *m, size_t dim, struct matrix *range)
 {
-    return matrix_set_label(m, dim, range->values);
+    return matrix_set_labels(m, dim, range->e);
 }
 
 struct matrix *matrix_range(double x1, double x2, double dx)
@@ -148,7 +144,7 @@ struct matrix *matrix_range(double x1, double x2, double dx)
     size_t i = 0;
     double last_value = x1;
     do {
-        m->values[i] = last_value;
+        m->e[i] = last_value;
         last_value += dx;
         i++;
     } while (i < count);
@@ -184,7 +180,7 @@ char *matrix_strval_2d(struct matrix *m)
     size_t i;
     for (i = 1; i <= M; i++) {
         vidx_row_2d(m, i, vidxs);
-        line = array_strval_vidxs(m->values, vidxs, N);
+        line = array_strval_vidxs(m->e, vidxs, N);
         strcat(strval, line);
         strcat(strval, "\n");
         free_safe(line);
@@ -203,7 +199,7 @@ char *matrix_strval(struct matrix *m)
         strval = strdup("");
     } else if (m->dim_count == 1) {
         // making string out of a 1D matrix = an array
-        strval = array_strval(m->values, m->e_count);
+        strval = array_strval(m->e, m->e_count);
     } else if (m->dim_count == 2) {
         // making string out of a 2D matrix
         strval = matrix_strval_2d(m);
@@ -269,21 +265,41 @@ char *matrix_strval_metadata(struct matrix *m)
     sprintf(temp, "dims = [%s]\n", temp2);
     free_safe(temp2);
     strcat(strval, temp);
+    
+    // e_count
+    memreset(temp, 100);
+    sprintf(temp, "e_count = %zu\n", m->e_count);
+    strcat(strval, temp);
+
+    // l_count
+    memreset(temp, 100);
+    sprintf(temp, "l_count = %zu\n", m->l_count);
+    strcat(strval, temp);
 
     // labels
-    size_t i;
-    for (i = 0; i < m->dim_count; i++) {
-        if (m->labels[i]) {
-            temp2 = array_strval(m->labels[i], m->dims[i]);
-            temp3 = (char *)calloc(100 + strlen(temp2), sizeof(char));
-            sprintf(temp3, "labels[%zu] = [%s]\n", i, temp2);
-            free_safe(temp2);
-            strcat(strval, temp3);
-            free_safe(temp3);
-        } else {
-            sprintf(temp, "labels[%zu] = []\n", i);
-            strcat(strval, temp);
+    if (m->l_count > 0) {
+        size_t i, offset;
+        double *lptr;
+        for (i = 0; i < m->dim_count; i++) {
+            offset = matrix_label_offset(m, i+1); // +1 because dims values start from 1
+            lptr = m->l + offset;
+            if (lptr) {
+                temp2 = array_strval(lptr, m->dims[i]);
+                temp3 = (char *)calloc(100 + strlen(temp2), sizeof(char));
+                sprintf(temp3, "labels[%zu] = [%s]\n", i, temp2);
+                strcat(strval, temp3);
+                free_safe(temp2);
+                free_safe(temp3);
+            } else {
+                memreset(temp, 100);
+                sprintf(temp, "labels[%zu] = []\n", i);
+                strcat(strval, temp);
+            }
         }
+    } else {
+        memreset(temp, 100);
+        sprintf(temp, "labels = []\n");
+        strcat(strval, temp);
     }
     return strval;
 }

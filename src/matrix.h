@@ -14,9 +14,9 @@ struct matrix {
     size_t dim_count; //<! number of dimensions
     size_t *dims; //<! number of elements at each dimension
     size_t e_count; //<! total # elements = multiplication of values in 'dims'
+    double *e; //<! all elements in a vectorized array
     size_t l_count; //<! total # labels = sum of values in 'dims'
-    double *values; //<! all elements in a vectorized array
-    double *labels; //<! inserted tags for each dimension
+    double *l; //<! inserted tags or labels for each dimension
 };
 
 typedef struct matrix *(*matrix_func)(struct matrix *);
@@ -25,9 +25,9 @@ typedef struct matrix *(*matrix_func)(struct matrix *);
 
 struct matrix *matrix_init_empty(size_t dim_count, size_t *dims);
 
-struct matrix *matrix_init(size_t dim_count, size_t *dims);
-
 struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels);
+
+struct matrix *matrix_init(size_t dim_count, size_t *dims);
 
 struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels);
 
@@ -37,7 +37,9 @@ int matrix_destroy_batch(int count, ...);
 
 struct matrix *matrix_dup(struct matrix *m);
 
-int matrix_set_value(struct matrix *m, size_t *pos, double value);
+int matrix_set_element(struct matrix *m, size_t *pos, double e);
+
+int matrix_set_labels(struct matrix *m, size_t dim, double *l);
 
 int matrix_set_label_by_range(struct matrix *m, size_t dim, struct matrix *range);
 
