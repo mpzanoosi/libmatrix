@@ -57,6 +57,8 @@ int matrix_calc(matrix_func f, struct matrix *m);
 
 struct matrix *matrix_func_exec(struct matrix *m, double (*f)(double));
 
+struct matrix *matrix_func_exec_label(struct matrix *m, double (*f)(double));
+
 #define matrix_sin(m) matrix_func_exec(m, sin)
 
 // ***** making strings and printing ***** //

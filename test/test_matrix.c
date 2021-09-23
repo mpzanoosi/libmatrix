@@ -48,16 +48,14 @@ int matrix_1D_test2()
     matrix_print_metadata(t);
     matrix_print(t);
     struct matrix *m1 = matrix_init_labels(dim_count, &t);
-    // struct matrix *result1 = matrix_sin(m1);
+    struct matrix *result1 = matrix_sin(m1);
     printf("\nm1: \n");
     matrix_print_metadata(m1);
     matrix_print(m1);
-    // printf("matrix_sin(m1) = \n");
-    // matrix_print_metadata(result1);
-    // printf("\n");
-    // matrix_print(result1);
-    // matrix_destroy_batch(3, result1, m1, t);
-    matrix_destroy_batch(2, m1, t);
+    printf("\nmatrix_sin(m1): \n");
+    matrix_print_metadata(result1);
+    matrix_print(result1);
+    matrix_destroy_batch(3, result1, m1, t);
     return 0;
 }
 

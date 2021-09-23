@@ -102,6 +102,8 @@ struct matrix *matrix_dup(struct matrix *m)
 
     if (m->l_count)
         ptrccpy(m_copy->l, m->l, double, m->l_count);
+
+    return m_copy;
 }
 
 int matrix_set_element(struct matrix *m, size_t *pos, double value)
