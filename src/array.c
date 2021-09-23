@@ -56,7 +56,7 @@ char *array_strval_size_t(size_t *a, size_t count)
     // answer: NO! it should be handled generally
     //         google "double maximum string size" and see stackoverflow why!
     //         however, the answer in that stackoverflow seems to be wrong!!!
-    strval = (char *)malloc(32*count + (count-1));
+    strval = (char *)calloc(32*count + (count-1), sizeof(char));
     int i;
     for (i = 0; i < count-1; i++) {
         memreset(temp, sizeof(temp));

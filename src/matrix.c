@@ -81,8 +81,10 @@ int matrix_destroy_batch(int count, ...)
     va_list ap;
     // loop to destroy all 
     va_start(ap, count);
+    for (i = 0; i < count; i++) {
         m = va_arg(ap, struct matrix *);
         matrix_destroy(m);
+    }
     va_end(ap);
     return 0;
 }
@@ -256,7 +258,7 @@ char *matrix_strval_metadata(struct matrix *m)
     // fixme: what if metadata string goes beyond 1000 bytes?!
     // fixme: what if temp goes beyond 100 bytes?!
     // confusion of the highest orda!
-    char *strval = (char *)malloc(1000);
+    char *strval = (char *)calloc(1000, sizeof(char));
     char temp[100];
     char *temp2, *temp3;
 
@@ -292,13 +294,13 @@ char *matrix_strval_metadata(struct matrix *m)
             if (lptr) {
                 temp2 = array_strval(lptr, m->dims[i]);
                 temp3 = (char *)calloc(100 + strlen(temp2), sizeof(char));
-                sprintf(temp3, "labels[%zu] = [%s]\n", i, temp2);
+                sprintf(temp3, "labels[%zu] = [%s]", i, temp2);
                 strcat(strval, temp3);
                 free_safe(temp2);
                 free_safe(temp3);
             } else {
                 memreset(temp, 100);
-                sprintf(temp, "labels[%zu] = []\n", i);
+                sprintf(temp, "labels[%zu] = []", i);
                 strcat(strval, temp);
             }
         }
