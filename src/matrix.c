@@ -38,14 +38,15 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
     size_t *dims;
     ptrccpy_element(dims, labels, e_count, size_t, dim_count);
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
-    free_safe(dims);
     new_matrix->l_count = helper_sigmasum(dim_count, dims);
     new_matrix->l = (double *)calloc(new_matrix->l_count, sizeof(double));
+    free_safe(dims);
+
 
     // now setting labels of the new matrix based on 'labels'
     int i;
-    for (i = 0; i < dim_count; i++) {
-        matrix_set_label_by_range(new_matrix, i, labels[i]);
+    for (i = 1; i <= dim_count; i++) {
+        matrix_set_label_by_range(new_matrix, i, labels[i-1]);
     }
 
     return new_matrix;
@@ -90,10 +91,15 @@ struct matrix *matrix_dup(struct matrix *m)
 {
     // making a duplicate without considering pointers contents
     struct matrix *m_copy = structdup(m);
+
     // making duplicate out of pointers contents
     ptrccpy(m_copy->dims, m->dims, size_t, m->dim_count);
-    ptrccpy(m_copy->e, m->e, double, m->e_count);
-    ptrccpy(m_copy->l, m->l, double, m->l_count);
+    
+    if (m->e_count > 0)
+        ptrccpy(m_copy->e, m->e, double, m->e_count);
+
+    if (m->l_count)
+        ptrccpy(m_copy->l, m->l, double, m->l_count);
 }
 
 int matrix_set_element(struct matrix *m, size_t *pos, double value)
@@ -118,7 +124,7 @@ size_t matrix_label_offset(struct matrix *m, size_t dim)
 int matrix_set_labels(struct matrix *m, size_t dim, double *l)
 {
     size_t offset = matrix_label_offset(m, dim);
-    size_t count = m->dims[dim];
+    size_t count = m->dims[dim-1];
     size_t i;
     for (i = 0; i < count; i++) {
         m->l[offset + i] = l[i];
@@ -140,7 +146,7 @@ struct matrix *matrix_range(double x1, double x2, double dx)
     size_t dim_count = 1;
     size_t dims[1];
     dims[0] = count;
-    struct matrix *m = matrix_init_empty(dim_count, dims);
+    struct matrix *m = matrix_init(dim_count, dims);
     size_t i = 0;
     double last_value = x1;
     do {
@@ -298,7 +304,7 @@ char *matrix_strval_metadata(struct matrix *m)
         }
     } else {
         memreset(temp, 100);
-        sprintf(temp, "labels = []\n");
+        sprintf(temp, "labels = []");
         strcat(strval, temp);
     }
     return strval;
@@ -307,6 +313,6 @@ char *matrix_strval_metadata(struct matrix *m)
 void matrix_print_metadata(struct matrix *m)
 {
     char *strval = matrix_strval_metadata(m);
-    printf("%s", strval);
+    printf("%s\n", strval);
     free_safe(strval);
 }

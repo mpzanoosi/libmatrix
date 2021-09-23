@@ -39,6 +39,8 @@ struct matrix *matrix_dup(struct matrix *m);
 
 int matrix_set_element(struct matrix *m, size_t *pos, double e);
 
+size_t matrix_label_offset(struct matrix *m, size_t dim);
+
 int matrix_set_labels(struct matrix *m, size_t dim, double *l);
 
 int matrix_set_label_by_range(struct matrix *m, size_t dim, struct matrix *range);
@@ -53,9 +55,9 @@ int matrix_calc(matrix_func f, struct matrix *m);
 
 // ***** mathematical functions ***** //
 
-struct matrix *matrix_func_(struct matrix *m, double (*f)(double));
+struct matrix *matrix_func_exec(struct matrix *m, double (*f)(double));
 
-#define matrix_sin(m) matrix_func_(m, sin)
+#define matrix_sin(m) matrix_func_exec(m, sin)
 
 // ***** making strings and printing ***** //
 

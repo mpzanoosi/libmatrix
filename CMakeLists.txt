@@ -31,6 +31,7 @@ add_library(matrix	SHARED
 		"src/helper.c"
 		"src/vidx.c"
 		"src/array.c"
+		"src/funcs.c"
 		"src/matrix.c"
 	)
 # adding properties

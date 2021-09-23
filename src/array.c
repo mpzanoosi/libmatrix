@@ -60,7 +60,7 @@ char *array_strval_size_t(size_t *a, size_t count)
     int i;
     for (i = 0; i < count-1; i++) {
         memreset(temp, sizeof(temp));
-        sprintf(temp, "%zu ", a[i]);
+        sprintf(temp, "%zu,", a[i]);
         strcat(strval, temp);
     }
     memreset(temp, sizeof(temp));
