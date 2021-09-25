@@ -9,3 +9,6 @@
 !*.[hc]
 !src/
 !test/
+!doc/
+!*.docx
+!*.pdf
