@@ -42,7 +42,6 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
     new_matrix->l = (double *)calloc(new_matrix->l_count, sizeof(double));
     free_safe(dims);
 
-
     // now setting labels of the new matrix based on 'labels'
     int i;
     for (i = 1; i <= dim_count; i++) {
@@ -182,7 +181,7 @@ char *matrix_strval_2d(struct matrix *m)
     // - 32+1 bytes for each element including ',' and end of line '\n' characters
     //   todo question: is 32+1 bytes sufficient?!
     size_t needed_bytes = (32+1) * m->e_count;
-    strval = (char *)malloc(needed_bytes);
+    strval = (char *)calloc(needed_bytes, sizeof(char));
 
     char *line; // temporary memory for each line
     size_t M = m->dims[0], N = m->dims[1];
@@ -296,7 +295,10 @@ char *matrix_strval_metadata(struct matrix *m)
             if (lptr) {
                 temp2 = array_strval(lptr, m->dims[i]);
                 temp3 = (char *)calloc(100 + strlen(temp2), sizeof(char));
-                sprintf(temp3, "labels[%zu] = [%s]", i, temp2);
+                if (i < m->dim_count-1)
+                    sprintf(temp3, "labels[%zu] = [%s]\n", i, temp2);
+                else
+                    sprintf(temp3, "labels[%zu] = [%s]", i, temp2);
                 strcat(strval, temp3);
                 free_safe(temp2);
                 free_safe(temp3);

@@ -83,7 +83,7 @@ char *array_strval_vidxs(double *a, size_t *vidxs, size_t count)
     char *strval; // output of this function
     char temp[50]; // for holding a number
 
-    strval = (char *)malloc(32*count + (count-1));
+    strval = (char *)calloc(32*count + (count-1), sizeof(char));
     int i;
     for (i = 0; i < count-1; i++) {
         memreset(temp, sizeof(temp));

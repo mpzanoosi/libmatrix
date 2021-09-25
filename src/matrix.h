@@ -53,13 +53,27 @@ int matrix_calc_by_labels(matrix_func f, struct matrix *m);
 
 int matrix_calc(matrix_func f, struct matrix *m);
 
+// ***** basic mathematics ***** //
+
+struct matrix *matrix_crossproduct(struct matrix *m1, struct matrix *m2);
+
 // ***** mathematical functions ***** //
 
-struct matrix *matrix_func_exec(struct matrix *m, double (*f)(double));
+void matrix_func_exec_ewise_fast(struct matrix *m, double (*f)(double));
 
-struct matrix *matrix_func_exec_label(struct matrix *m, double (*f)(double));
+struct matrix *matrix_sin(struct matrix *m);
 
-#define matrix_sin(m) matrix_func_exec(m, sin)
+#define matrix_sin_linspace(x1, x2, count) ({\
+    struct matrix *result = matrix_linspace(x1, x2, count); \
+    matrix_func_exec_ewise_fast(result, sin); \
+    result; })
+
+struct matrix *matrix_cos(struct matrix *m);
+
+#define matrix_cos_range(x1, x2, dx) ({\
+    struct matrix *result = matrix_range(x1, x2, dx); \
+    matrix_func_exec_ewise_fast(result, cos); \
+    result; })
 
 // ***** making strings and printing ***** //
 
@@ -72,5 +86,10 @@ char *matrix_strval_metadata(struct matrix *m);
 void matrix_print(struct matrix *m);
 
 void matrix_print_metadata(struct matrix *m);
+
+#define matrix_print_all(m) ({\
+    printf("%s: \n", #m); \
+    matrix_print_metadata(m); \
+    matrix_print(m); })
 
 #endif // MATRIX_H
