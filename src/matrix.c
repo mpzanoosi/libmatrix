@@ -99,7 +99,7 @@ struct matrix *matrix_dup(struct matrix *m)
     if (m->e_count > 0)
         ptrccpy(m_copy->e, m->e, double, m->e_count);
 
-    if (m->l_count)
+    if (m->l_count > 0)
         ptrccpy(m_copy->l, m->l, double, m->l_count);
 
     return m_copy;

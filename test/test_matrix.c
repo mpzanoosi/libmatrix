@@ -58,14 +58,38 @@ int test2_2D()
     struct matrix *A = matrix_crossproduct(y, x);
     matrix_print_all(A);
     matrix_destroy_batch(3, x, y, A);
+    return 0;
 }
 
+int test_operators()
+{
+    // testing matrix_reshape
+    printf("---- testing matrix_reshape ----\n");
+    struct matrix *A = matrix_sin_linspace(0, MATRIX_PI, 18);
+    size_t new_dims[] = {6,3};
+    struct matrix *A1 = matrix_reshape(A, 2, new_dims);
+    size_t new_dims2[] = {2,9};
+    struct matrix *A2 = matrix_reshape(A1, 2, new_dims2);
+    matrix_print_all(A);
+    matrix_print_all(A1);
+    matrix_print_all(A2);
+
+    // testing matrix_transpose
+    printf("\n---- testing matrix_transpose ----\n");
+    struct matrix *A1T = matrix_transpose(A1);
+    matrix_print_all(A1);
+    matrix_print_all(A1T);
+
+    matrix_destroy_batch(4, A, A1, A2, A1T);
+    return 0;
+}
 
 int main()
 {
     // test1_1D();
     // test1_2D();
     // test2_1D();
-    test2_2D();
+    // test2_2D();
+    test_operators();
     return 0;
 }

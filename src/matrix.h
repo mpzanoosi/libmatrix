@@ -53,7 +53,17 @@ int matrix_calc_by_labels(matrix_func f, struct matrix *m);
 
 int matrix_calc(matrix_func f, struct matrix *m);
 
-// ***** basic mathematics ***** //
+// ***** matrix operators/operations ***** //
+
+// single-element operators (like transpose)
+
+struct matrix *matrix_transpose(struct matrix *m);
+
+struct matrix *matrix_reshape(struct matrix *m, size_t new_dim_count, size_t *new_dims);
+
+// single-element operators (like cross-product)
+
+struct matrix *matrix_innerproduct(struct matrix *m1, struct matrix *m2);
 
 struct matrix *matrix_crossproduct(struct matrix *m1, struct matrix *m2);
 

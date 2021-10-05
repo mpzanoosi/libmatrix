@@ -20,6 +20,7 @@ size_t vidx_pos(struct matrix *m, size_t *pos)
 
 void vidx_row_2d(struct matrix *m, size_t row, size_t *vidxs)
 {
+    // storing vidx of a desired row in a vector
     size_t M = m->dims[0], N = m->dims[1];
     size_t j;
     for (j = 0; j < N; j++) {
