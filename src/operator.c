@@ -40,16 +40,12 @@ struct matrix *matrix_transpose(struct matrix *m)
     //           any malfunctioning yet :D
     if (m->dim_count == 2) {
         size_t M = m->dims[0], N = m->dims[1];
-        size_t *vidxs = (size_t *)malloc(N * sizeof(size_t));
-        size_t i, j;
-        for (i = 1; i <= M; i++) {
-            // getting vidxs of ith row
-            vidx_row_2d(m, i, vidxs);
-            // copying elements from m int mT
-            for (j = 0; j < N; j++)
-                mT->e[(i-1)*N + j] = m->e[vidxs[j]];
+        size_t i, j, vidx;
+        for (i = 0; i < M; i++) {
+            for (j = 0; j < N; j++) {
+                mT->e[i*N + j] = m->e[j*M + i]; // isn't it beautiful?! xD
+            }
         }
-        free_safe(vidxs);
         mT->dims[0] = N;
         mT->dims[1] = M;
     }
