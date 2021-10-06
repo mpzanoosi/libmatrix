@@ -28,6 +28,11 @@ set(CMAKE_C_FLAGS "-rdynamic -fPIC -g -Wformat")
 # adding source files
 add_library(matrix	SHARED
 		# "src/backtrace.c"
+		"src/helper.c"
+		"src/vidx.c"
+		"src/array.c"
+		"src/funcs.c"
+		"src/operator.c"
 		"src/matrix.c"
 	)
 # adding properties
