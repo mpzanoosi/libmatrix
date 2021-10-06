@@ -48,6 +48,13 @@ struct matrix *matrix_transpose(struct matrix *m)
         }
         mT->dims[0] = N;
         mT->dims[1] = M;
+        // transposing labels as well
+        if (m->l_count > 0) {
+            for (i = 0; i < M; i++)
+                mT->l[N+i] = m->l[i];
+            for (i = 0; i < N; i++)
+                mT->l[i] = m->l[M+i];
+        }
     }
 
     return mT;
