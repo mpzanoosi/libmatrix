@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "../src/init/matrix.h"
 
 int test1_1D()
 {

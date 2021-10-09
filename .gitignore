@@ -6,9 +6,13 @@
 !CMakeLists.txt
 !README.md
 !Doxyfile
-!*.[hc]
+# src directory descendants
 !src/
+!*.[hc]
+!/src/**/
+# test directory descendants
 !test/
+# doc directory descendants
 !doc/
 !*.docx
 !*.pdf

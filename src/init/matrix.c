@@ -202,7 +202,7 @@ char *matrix_strval_2d(struct matrix *m)
 char *matrix_strval(struct matrix *m)
 {
     char *strval; // output of this function
-    char temp[50]; // for holding a number
+    //char temp[50]; // for holding a number
 
     if (m->dim_count < 1) {
         strval = strdup("");
@@ -233,8 +233,8 @@ char *matrix_strval(struct matrix *m)
             /*margin bytes*/ 10;
         strval = (char *)malloc(needed_bytes);
 
-        size_t line_length = (sizeof(double)+1) * m->dims[1] + 5; // 5 is just for margin
-        char *line = (char *)malloc(line_length);
+        //size_t line_length = (sizeof(double)+1) * m->dims[1] + 5; // 5 is just for margin
+        //char *line = (char *)malloc(line_length);
         size_t separator_length = 9+2*sizeof(size_t) + 5; // 5 is just for margin
         char *separator = (char *)malloc(separator_length);
         

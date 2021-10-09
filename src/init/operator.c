@@ -40,7 +40,7 @@ struct matrix *matrix_transpose(struct matrix *m)
     //           any malfunctioning yet :D
     if (m->dim_count == 2) {
         size_t M = m->dims[0], N = m->dims[1];
-        size_t i, j, vidx;
+        size_t i, j;
         for (i = 0; i < M; i++) {
             for (j = 0; j < N; j++) {
                 mT->e[i*N + j] = m->e[j*M + i]; // isn't it beautiful?! xD
