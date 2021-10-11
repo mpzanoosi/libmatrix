@@ -1,8 +1,10 @@
 # minimum required cmake
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.16)
 
 # project name
-project(libmatrix)
+project(libmatrix
+		DESCRIPTION "library for fast & memory-efficient matrix computations using C"
+		HOMEPAGE_URL "https://github.com/mpzanoosi/libmatrix")
 
 # versioning
 set(VERSION_MAJOR 0)

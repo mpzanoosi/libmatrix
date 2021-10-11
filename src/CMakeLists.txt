@@ -1,3 +1,8 @@
+# note: a good approach for adding .c and .h files
+#		is to add them manually!
+# 		if the number of files gets so big, maybe I 
+#		switch to use file(GLOB_RECURSE ...) instead
+
 # adding files to the project
 add_library(matrix SHARED
 		"init/matrix.c"
@@ -12,8 +17,8 @@ set_target_properties(matrix PROPERTIES
 
 # adding install method
 INSTALL(TARGETS matrix 
-        LIBRARY DESTINATION lib/
-        PUBLIC_HEADER DESTINATION include/
+        LIBRARY DESTINATION lib/matrix/
+        PUBLIC_HEADER DESTINATION include/matrix/
         LIBRARY PERMISSIONS WORLD_READ WORLD_WRITE WORLD_EXECUTE
 	)
 	
