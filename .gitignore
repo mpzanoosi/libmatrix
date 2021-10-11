@@ -11,7 +11,7 @@
 !*.[hc]
 !/src/**/
 # test directory descendants
-!test/
+!utest/
 # doc directory descendants
 !doc/
 !*.docx
