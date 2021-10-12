@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include "matrix.h"
-#include "helper.h"
 
 // header to manipulate vectorized index concept
 //

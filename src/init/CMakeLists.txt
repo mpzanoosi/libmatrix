@@ -2,7 +2,6 @@
 # - init/set/get of different structures and attributes
 # - initializing specific matrices and vectors, like matrix_linspace function
 add_library(init
-		"helper.c"
 		"vidx.c"
 		"array.c"
 		"matrix.c"

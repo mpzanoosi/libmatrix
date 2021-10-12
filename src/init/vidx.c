@@ -1,4 +1,5 @@
 #include "vidx.h"
+#include "array.h"
 
 size_t vidx_pos(struct matrix *m, size_t *pos)
 {
@@ -9,11 +10,11 @@ size_t vidx_pos(struct matrix *m, size_t *pos)
     //  you should add elements count of all previous
     //  dimensions by each step
     //  (pos[i]-1) -> number of steps
-    //  matrix_pimult(i, m->dims) -> number of passed elements per step in the i-th dimension
+    //  matrix_array_pimult(i, m->dims) -> number of passed elements per step in the i-th dimension
     size_t vidx = 0;
     int i;
     for (i = 0; i < m->dim_count; i++) {
-        vidx += (pos[i]-1) * matrix_pimult(i, m->dims);
+        vidx += (pos[i]-1) * matrix_array_pimult(i, m->dims);
     }
     return vidx;
 }
