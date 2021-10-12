@@ -10,6 +10,7 @@
 // ***** numerical constants ***** //
 #define MATRIX_PI   M_PI
 
+// ***** basic structure ***** //
 struct matrix {
     size_t dim_count; //<! number of dimensions
     size_t *dims; //<! number of elements at each dimension
