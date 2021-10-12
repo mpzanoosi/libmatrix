@@ -50,8 +50,10 @@ struct matrix *matrix_range(double x1, double x2, double dx);
 
 struct matrix *matrix_linspace(double x1, double x2, size_t count);
 
+// todo: develop this function
 int matrix_calc_by_labels(matrix_func f, struct matrix *m);
 
+// todo: develop this function
 int matrix_calc(matrix_func f, struct matrix *m);
 
 // ***** making strings and printing ***** //

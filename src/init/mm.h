@@ -1,6 +1,9 @@
 #ifndef MATRIX_MM_H
 #define MATRIX_MM_H
 
+// a set of macros for memory manipulations,
+// like making a copying of a pointer contents, etc.
+
 #include <string.h>
 #include <stdlib.h>
 

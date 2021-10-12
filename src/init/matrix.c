@@ -1,5 +1,4 @@
 #include "matrix.h"
-#include "helper.h"
 #include "mm.h"
 #include "array.h"
 #include "vidx.h"
@@ -107,7 +106,7 @@ struct matrix *matrix_dup(struct matrix *m)
 
 int matrix_set_element(struct matrix *m, size_t *pos, double value)
 {
-    size_t vidx = vidx_pos(m, pos);
+    size_t vidx = matrix_pos2vidx(m, pos);
     if (vidx == -1)
         return -1;
     m->e[vidx] = value;
@@ -188,7 +187,7 @@ char *matrix_strval_2d(struct matrix *m)
     size_t *vidxs = (size_t *)malloc(N * sizeof(size_t));
     size_t i;
     for (i = 1; i <= M; i++) {
-        vidx_row_2d(m, i, vidxs);
+        matrix_row2vidxs_2d(m, i, vidxs);
         line = matrix_array_strval_double_vidxs(m->e, vidxs, N);
         strcat(strval, line);
         strcat(strval, "\n");

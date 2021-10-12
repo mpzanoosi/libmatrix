@@ -1,7 +1,7 @@
 #include "vidx.h"
 #include "array.h"
 
-size_t vidx_pos(struct matrix *m, size_t *pos)
+size_t matrix_pos2vidx(struct matrix *m, size_t *pos)
 {
     // dims = [3,4,5]
     // pos = [1,2,3]
@@ -19,7 +19,7 @@ size_t vidx_pos(struct matrix *m, size_t *pos)
     return vidx;
 }
 
-void vidx_row_2d(struct matrix *m, size_t row, size_t *vidxs)
+void matrix_row2vidxs_2d(struct matrix *m, size_t row, size_t *vidxs)
 {
     // storing vidx of a desired row in a vector
     size_t M = m->dims[0], N = m->dims[1];

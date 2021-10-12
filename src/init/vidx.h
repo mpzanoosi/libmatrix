@@ -20,8 +20,10 @@
 // pos is the (i,j) position and vidx is its index in the 
 // vectorized matrix
 
-size_t vidx_pos(struct matrix *m, size_t *pos); // vectorized index of a positions
+// converting matrix index to vidx
+size_t matrix_pos2vidx(struct matrix *m, size_t *pos);
 
-void vidx_row_2d(struct matrix *m, size_t row, size_t *vidxs); // vectorized indexes of a row
+// getting all vidx numbers of a row for 2d
+void matrix_row2vidxs_2d(struct matrix *m, size_t row, size_t *vidxs);
 
 #endif // MATRIX_VIDX_H
