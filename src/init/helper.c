@@ -1,6 +1,6 @@
 #include "helper.h"
 
-size_t helper_pimult(size_t count, size_t *intvals)
+size_t matrix_pimult(size_t count, size_t *intvals)
 {
     if (count < 0)
         return -1;
@@ -15,7 +15,7 @@ size_t helper_pimult(size_t count, size_t *intvals)
     return result;
 }
 
-size_t helper_sigmasum(size_t count, size_t *intvals)
+size_t matrix_sigmasum(size_t count, size_t *intvals)
 {
     if (count < 0)
         return -1;

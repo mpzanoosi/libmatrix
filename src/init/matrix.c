@@ -22,7 +22,7 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
 struct matrix *matrix_init(size_t dim_count, size_t *dims)
 {
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
-    new_matrix->e_count = helper_pimult(dim_count, dims);
+    new_matrix->e_count = matrix_pimult(dim_count, dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     // "he is beginning to believe again!"
     return new_matrix;
@@ -38,7 +38,7 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
     size_t *dims;
     ptrccpy_element(dims, labels, e_count, size_t, dim_count);
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
-    new_matrix->l_count = helper_sigmasum(dim_count, dims);
+    new_matrix->l_count = matrix_sigmasum(dim_count, dims);
     new_matrix->l = (double *)calloc(new_matrix->l_count, sizeof(double));
     free_safe(dims);
 
@@ -54,7 +54,7 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
 struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels)
 {
     struct matrix *new_matrix = matrix_init_empty_labels(dim_count, labels);
-    new_matrix->e_count = helper_pimult(dim_count, new_matrix->dims);
+    new_matrix->e_count = matrix_pimult(dim_count, new_matrix->dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     return new_matrix;
 }
@@ -121,7 +121,7 @@ size_t matrix_label_offset(struct matrix *m, size_t dim)
     // offset of 2nd dimension label is 3 = m->dims[0]
     // offset of 3rd dimension label is 3+6 = m->dims[0] + m->dims[1]
     // offset of 4th dimension label is 3+6+4 = m->dims[0] + m->dims[1] + m->dims[2]
-    return helper_sigmasum(dim-1, m->dims);
+    return matrix_sigmasum(dim-1, m->dims);
 }
 
 int matrix_set_labels(struct matrix *m, size_t dim, double *l)
@@ -225,7 +225,7 @@ char *matrix_strval(struct matrix *m)
         //  - we add 10 bytes just for a margin (not necessary, but just to make sure)
         //
         // a way to calculate 5*6 :D
-        size_t extra_dims_counts = helper_pimult(m->dim_count-2, m->dims+2);
+        size_t extra_dims_counts = matrix_pimult(m->dim_count-2, m->dims+2);
         size_t needed_bytes = \
             /*bytes for each element*/ (sizeof(double)+1) * m->e_count + \
             /*bytes for '\n' characters*/ extra_dims_counts * m->dims[0] + \

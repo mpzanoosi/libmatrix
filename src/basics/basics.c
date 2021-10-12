@@ -1,9 +1,5 @@
-#include "matrix.h"
-#include "helper.h"
-#include "mm.h"
-#include "vidx.h"
-
-// single-element operators
+#include "basics.h"
+#include "../init/init.h"
 
 struct matrix *matrix_transpose(struct matrix *m)
 {
@@ -68,7 +64,7 @@ struct matrix *matrix_reshape(struct matrix *m, size_t new_dim_count, size_t *ne
     // previous labels are not valid on the reshaped matrix
 
     // checking reshaping possibility by counting total elements
-    size_t new_e_count = helper_pimult(new_dim_count, new_dims);
+    size_t new_e_count = matrix_pimult(new_dim_count, new_dims);
     if (new_e_count != m->e_count)
         return NULL;
 

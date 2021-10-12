@@ -1,11 +1,11 @@
-# NOTE: all submodules are able to be used as a library by add_library command (modular coding issue)
-# adding executables into this submodule (as a local library)
+# init subfolder contains initialization of libmatrix including
+# - init/set/get of different structures and attributes
+# - initializing specific matrices and vectors, like matrix_linspace function
 add_library(init
 		"helper.c"
 		"vidx.c"
 		"array.c"
 		"funcs.c"
-		"operator.c"
 		"matrix.c"
 	)
 
