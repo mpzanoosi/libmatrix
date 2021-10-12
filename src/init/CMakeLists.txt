@@ -5,7 +5,6 @@ add_library(init
 		"helper.c"
 		"vidx.c"
 		"array.c"
-		"funcs.c"
 		"matrix.c"
 	)
 

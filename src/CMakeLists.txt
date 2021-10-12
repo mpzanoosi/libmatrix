@@ -25,6 +25,7 @@ INSTALL(TARGETS matrix
 # adding subdirectories
 add_subdirectory(init)
 add_subdirectory(basics)
+add_subdirectory(funcs)
 
 # actually making the library
-target_link_libraries(matrix init basics)
+target_link_libraries(matrix init basics funcs)

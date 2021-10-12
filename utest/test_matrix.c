@@ -1,5 +1,6 @@
 #include "../src/init/matrix.h" // -> <matrix/matrix.h>
 #include "../src/basics/basics.h" // -> <matrix/basics.h>
+#include "../src/funcs/funcs.h" // -> <matrix/funcs.h>
 
 int test1_1D()
 {

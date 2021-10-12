@@ -53,24 +53,6 @@ int matrix_calc_by_labels(matrix_func f, struct matrix *m);
 
 int matrix_calc(matrix_func f, struct matrix *m);
 
-// ***** mathematical functions ***** //
-
-void matrix_func_exec_ewise_fast(struct matrix *m, double (*f)(double));
-
-struct matrix *matrix_sin(struct matrix *m);
-
-#define matrix_sin_linspace(x1, x2, count) ({\
-    struct matrix *result = matrix_linspace(x1, x2, count); \
-    matrix_func_exec_ewise_fast(result, sin); \
-    result; })
-
-struct matrix *matrix_cos(struct matrix *m);
-
-#define matrix_cos_range(x1, x2, dx) ({\
-    struct matrix *result = matrix_range(x1, x2, dx); \
-    matrix_func_exec_ewise_fast(result, cos); \
-    result; })
-
 // ***** making strings and printing ***** //
 
 char *matrix_strval(struct matrix *m);
