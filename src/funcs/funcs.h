@@ -13,6 +13,8 @@
 // #include <matrix/matrix.h>
 // ***** mathematical functions ***** //
 
+struct matrix *matrix_func_exec_ewise(struct matrix *m, double (*f)(double));
+
 void matrix_func_exec_ewise_fast(struct matrix *m, double (*f)(double));
 
 struct matrix *matrix_sin(struct matrix *m);

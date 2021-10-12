@@ -88,10 +88,10 @@ int test_operators()
 
 int main()
 {
-    // test1_1D();
-    // test1_2D();
-    // test2_1D();
-    // test2_2D();
+    test1_1D();
+    test1_2D();
+    test2_1D();
+    test2_2D();
     test_operators();
     return 0;
 }
