@@ -1,4 +1,5 @@
-#include "matrix.h"
+#include "funcs.h"
+#include "../init/init.h"
 
 struct matrix *matrix_func_exec_ewise(struct matrix *m, double (*f)(double))
 {

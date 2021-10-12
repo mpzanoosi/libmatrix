@@ -10,6 +10,7 @@
 // ***** numerical constants ***** //
 #define MATRIX_PI   M_PI
 
+// ***** basic structure ***** //
 struct matrix {
     size_t dim_count; //<! number of dimensions
     size_t *dims; //<! number of elements at each dimension
@@ -49,37 +50,11 @@ struct matrix *matrix_range(double x1, double x2, double dx);
 
 struct matrix *matrix_linspace(double x1, double x2, size_t count);
 
+// todo: develop this function
 int matrix_calc_by_labels(matrix_func f, struct matrix *m);
 
+// todo: develop this function
 int matrix_calc(matrix_func f, struct matrix *m);
-
-// ***** matrix operators/operations ***** //
-
-struct matrix *matrix_transpose(struct matrix *m);
-
-struct matrix *matrix_reshape(struct matrix *m, size_t new_dim_count, size_t *new_dims);
-
-struct matrix *matrix_innerproduct(struct matrix *m1, struct matrix *m2);
-
-struct matrix *matrix_crossproduct(struct matrix *m1, struct matrix *m2);
-
-// ***** mathematical functions ***** //
-
-void matrix_func_exec_ewise_fast(struct matrix *m, double (*f)(double));
-
-struct matrix *matrix_sin(struct matrix *m);
-
-#define matrix_sin_linspace(x1, x2, count) ({\
-    struct matrix *result = matrix_linspace(x1, x2, count); \
-    matrix_func_exec_ewise_fast(result, sin); \
-    result; })
-
-struct matrix *matrix_cos(struct matrix *m);
-
-#define matrix_cos_range(x1, x2, dx) ({\
-    struct matrix *result = matrix_range(x1, x2, dx); \
-    matrix_func_exec_ewise_fast(result, cos); \
-    result; })
 
 // ***** making strings and printing ***** //
 

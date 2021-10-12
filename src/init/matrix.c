@@ -1,5 +1,4 @@
 #include "matrix.h"
-#include "helper.h"
 #include "mm.h"
 #include "array.h"
 #include "vidx.h"
@@ -22,7 +21,7 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
 struct matrix *matrix_init(size_t dim_count, size_t *dims)
 {
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
-    new_matrix->e_count = helper_pimult(dim_count, dims);
+    new_matrix->e_count = matrix_array_pimult(dim_count, dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     // "he is beginning to believe again!"
     return new_matrix;
@@ -38,7 +37,7 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
     size_t *dims;
     ptrccpy_element(dims, labels, e_count, size_t, dim_count);
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
-    new_matrix->l_count = helper_sigmasum(dim_count, dims);
+    new_matrix->l_count = matrix_array_sigmasum(dim_count, dims);
     new_matrix->l = (double *)calloc(new_matrix->l_count, sizeof(double));
     free_safe(dims);
 
@@ -54,7 +53,7 @@ struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels
 struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels)
 {
     struct matrix *new_matrix = matrix_init_empty_labels(dim_count, labels);
-    new_matrix->e_count = helper_pimult(dim_count, new_matrix->dims);
+    new_matrix->e_count = matrix_array_pimult(dim_count, new_matrix->dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     return new_matrix;
 }
@@ -107,7 +106,7 @@ struct matrix *matrix_dup(struct matrix *m)
 
 int matrix_set_element(struct matrix *m, size_t *pos, double value)
 {
-    size_t vidx = vidx_pos(m, pos);
+    size_t vidx = matrix_pos2vidx(m, pos);
     if (vidx == -1)
         return -1;
     m->e[vidx] = value;
@@ -121,7 +120,7 @@ size_t matrix_label_offset(struct matrix *m, size_t dim)
     // offset of 2nd dimension label is 3 = m->dims[0]
     // offset of 3rd dimension label is 3+6 = m->dims[0] + m->dims[1]
     // offset of 4th dimension label is 3+6+4 = m->dims[0] + m->dims[1] + m->dims[2]
-    return helper_sigmasum(dim-1, m->dims);
+    return matrix_array_sigmasum(dim-1, m->dims);
 }
 
 int matrix_set_labels(struct matrix *m, size_t dim, double *l)
@@ -188,8 +187,8 @@ char *matrix_strval_2d(struct matrix *m)
     size_t *vidxs = (size_t *)malloc(N * sizeof(size_t));
     size_t i;
     for (i = 1; i <= M; i++) {
-        vidx_row_2d(m, i, vidxs);
-        line = array_strval_vidxs(m->e, vidxs, N);
+        matrix_row2vidxs_2d(m, i, vidxs);
+        line = matrix_array_strval_double_vidxs(m->e, vidxs, N);
         strcat(strval, line);
         strcat(strval, "\n");
         free_safe(line);
@@ -202,13 +201,13 @@ char *matrix_strval_2d(struct matrix *m)
 char *matrix_strval(struct matrix *m)
 {
     char *strval; // output of this function
-    char temp[50]; // for holding a number
+    //char temp[50]; // for holding a number
 
     if (m->dim_count < 1) {
         strval = strdup("");
     } else if (m->dim_count == 1) {
         // making string out of a 1D matrix = an array
-        strval = array_strval(m->e, m->e_count);
+        strval = matrix_array_strval_double(m->e, m->e_count);
     } else if (m->dim_count == 2) {
         // making string out of a 2D matrix
         strval = matrix_strval_2d(m);
@@ -225,7 +224,7 @@ char *matrix_strval(struct matrix *m)
         //  - we add 10 bytes just for a margin (not necessary, but just to make sure)
         //
         // a way to calculate 5*6 :D
-        size_t extra_dims_counts = helper_pimult(m->dim_count-2, m->dims+2);
+        size_t extra_dims_counts = matrix_array_pimult(m->dim_count-2, m->dims+2);
         size_t needed_bytes = \
             /*bytes for each element*/ (sizeof(double)+1) * m->e_count + \
             /*bytes for '\n' characters*/ extra_dims_counts * m->dims[0] + \
@@ -233,8 +232,8 @@ char *matrix_strval(struct matrix *m)
             /*margin bytes*/ 10;
         strval = (char *)malloc(needed_bytes);
 
-        size_t line_length = (sizeof(double)+1) * m->dims[1] + 5; // 5 is just for margin
-        char *line = (char *)malloc(line_length);
+        //size_t line_length = (sizeof(double)+1) * m->dims[1] + 5; // 5 is just for margin
+        //char *line = (char *)malloc(line_length);
         size_t separator_length = 9+2*sizeof(size_t) + 5; // 5 is just for margin
         char *separator = (char *)malloc(separator_length);
         
@@ -270,7 +269,7 @@ char *matrix_strval_metadata(struct matrix *m)
 
     // dims
     memreset(temp, 100);
-    temp2 = array_strval_size_t(m->dims, m->dim_count);
+    temp2 = matrix_array_strval_size_t(m->dims, m->dim_count);
     sprintf(temp, "dims = [%s]\n", temp2);
     free_safe(temp2);
     strcat(strval, temp);
@@ -293,7 +292,7 @@ char *matrix_strval_metadata(struct matrix *m)
             offset = matrix_label_offset(m, i+1); // +1 because dims values start from 1
             lptr = m->l + offset;
             if (lptr) {
-                temp2 = array_strval(lptr, m->dims[i]);
+                temp2 = matrix_array_strval_double(lptr, m->dims[i]);
                 temp3 = (char *)calloc(100 + strlen(temp2), sizeof(char));
                 if (i < m->dim_count-1)
                     sprintf(temp3, "labels[%zu] = [%s]\n", i, temp2);
