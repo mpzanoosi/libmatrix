@@ -28,4 +28,5 @@ add_subdirectory(basics)
 add_subdirectory(funcs)
 
 # actually making the library
+set(CMAKE_C_FLAGS "-rdynamic -fPIC -g -Wall")
 target_link_libraries(matrix init basics funcs)

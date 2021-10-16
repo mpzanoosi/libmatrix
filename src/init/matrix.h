@@ -16,6 +16,7 @@ struct matrix {
     size_t *dims; //<! number of elements at each dimension
     size_t e_count; //<! total # elements = multiplication of values in 'dims'
     double *e; //<! all elements in a vectorized array
+    double **e2; //<! a 2D mapping of 'e' just for 2D matrices
     size_t l_count; //<! total # labels = sum of values in 'dims'
     double *l; //<! inserted tags or labels for each dimension
 };

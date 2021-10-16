@@ -12,10 +12,28 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     ptrccpy(new_matrix->dims, dims, size_t, dim_count);
     new_matrix->e_count = 0;
     new_matrix->e = NULL;
+    new_matrix->e2 = NULL;
     new_matrix->l_count = 0;
     new_matrix->l = NULL;
     // "he is beginning to believe"
     return new_matrix;
+}
+
+void _matrix_init_e2(struct matrix *m)
+{
+    // assuming m is an MxN matrix
+    size_t M = m->dims[0], N = m->dims[1];
+    m->e2 = (double **)calloc(N, sizeof(double *));
+    size_t j;
+    for (j = 0; j < N; j++) {
+        m->e2[j] = m->e + j*M;
+    }
+}
+
+void _matrix_update_e2(struct matrix *m)
+{
+    free_safe(m->e2);
+    _matrix_init_e2(m);
 }
 
 struct matrix *matrix_init(size_t dim_count, size_t *dims)
@@ -23,6 +41,9 @@ struct matrix *matrix_init(size_t dim_count, size_t *dims)
     struct matrix *new_matrix = matrix_init_empty(dim_count, dims);
     new_matrix->e_count = matrix_array_pimult(dim_count, dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
+    if (dim_count == 2) {
+        _matrix_init_e2(new_matrix);
+    }
     // "he is beginning to believe again!"
     return new_matrix;
 }
@@ -55,6 +76,9 @@ struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels)
     struct matrix *new_matrix = matrix_init_empty_labels(dim_count, labels);
     new_matrix->e_count = matrix_array_pimult(dim_count, new_matrix->dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
+    if (dim_count == 2) {
+        _matrix_init_e2(new_matrix);
+    }
     return new_matrix;
 }
 
@@ -65,6 +89,7 @@ int matrix_destroy(struct matrix *m)
 
     free_safe(m->l);
     free_safe(m->e);
+    free_safe(m->e2);
     free_safe(m->dims);
     free_safe(m);
 
@@ -95,8 +120,13 @@ struct matrix *matrix_dup(struct matrix *m)
     // making duplicate out of pointers contents
     ptrccpy(m_copy->dims, m->dims, size_t, m->dim_count);
     
-    if (m->e_count > 0)
+    if (m->e_count > 0) {
         ptrccpy(m_copy->e, m->e, double, m->e_count);
+        if (m->dim_count == 2) {
+            size_t N = m->dims[1];
+            ptrccpy(m_copy->e2, m->e2, double *, N);
+        }
+    }
 
     if (m->l_count > 0)
         ptrccpy(m_copy->l, m->l, double, m->l_count);

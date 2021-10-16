@@ -44,6 +44,7 @@ struct matrix *matrix_transpose(struct matrix *m)
         }
         mT->dims[0] = N;
         mT->dims[1] = M;
+        _matrix_update_e2(mT);
         // transposing labels as well
         if (m->l_count > 0) {
             for (i = 0; i < M; i++)
@@ -73,6 +74,9 @@ struct matrix *matrix_reshape(struct matrix *m, size_t new_dim_count, size_t *ne
     result->dim_count = new_dim_count;
     free_safe(result->dims);
     ptrccpy(result->dims, new_dims, size_t, new_dim_count);
+    if (new_dim_count == 2) {
+        _matrix_update_e2(result);
+    }
 
     // previous labels no longer are valid
     free_safe(result->l);

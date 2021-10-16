@@ -87,12 +87,28 @@ int test_operators()
     return 0;
 }
 
+int test_matrix_transpose()
+{
+    // testing matrix_transpose
+    printf("---- testing matrix_transpose ----\n");
+    struct matrix *A = matrix_sin_linspace(0, MATRIX_PI, 18);
+    size_t new_dims[] = {6,3};
+    struct matrix *A1 = matrix_reshape(A, 2, new_dims);
+    struct matrix *A1T = matrix_transpose(A1);
+    matrix_print_all(A1);
+    matrix_print_all(A1T);
+
+    matrix_destroy_batch(3, A, A1, A1T);
+    return 0;
+}
+
 int main()
 {
-    test1_1D();
-    test1_2D();
-    test2_1D();
-    test2_2D();
-    test_operators();
+    // test1_1D();
+    // test1_2D();
+    // test2_1D();
+    // test2_2D();
+    // test_operators();
+    test_matrix_transpose();
     return 0;
 }
