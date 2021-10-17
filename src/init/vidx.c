@@ -19,6 +19,16 @@ size_t matrix_pos2vidx(struct matrix *m, size_t *pos)
     return vidx;
 }
 
+size_t matrix_pos2vidx_2d(struct matrix *m, size_t row, size_t col)
+{
+    return ((row-1) + (col-1)*m->dims[1]);
+}
+
+size_t matrix_pos2vidx_2d_square(size_t N, size_t row, size_t col)
+{
+    return ((row-1) + (col-1)*N);
+}
+
 void matrix_row2vidxs_2d(struct matrix *m, size_t row, size_t *vidxs)
 {
     // storing vidx of a desired row in a vector

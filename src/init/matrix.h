@@ -37,6 +37,10 @@ int matrix_destroy(struct matrix *m);
 
 int matrix_destroy_batch(int count, ...);
 
+int matrix_set_e(struct matrix *m, double *e);
+
+int matrix_set_dims(struct matrix *m, double *dims);
+
 struct matrix *matrix_dup(struct matrix *m);
 
 int matrix_set_element(struct matrix *m, size_t *pos, double e);

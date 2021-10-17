@@ -20,4 +20,10 @@ struct matrix *matrix_innerproduct(struct matrix *m1, struct matrix *m2);
 
 struct matrix *matrix_crossproduct(struct matrix *m1, struct matrix *m2);
 
+double matrix_det(struct matrix *m);
+
+// checking stuff
+
+int matrix_issquare(struct matrix *m);
+
 #endif // MATRIX_BASICS_H

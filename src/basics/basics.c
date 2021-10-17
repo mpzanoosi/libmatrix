@@ -1,5 +1,6 @@
 #include "basics.h"
 #include "../init/init.h"
+#include "../init/vidx.h"
 
 struct matrix *matrix_transpose(struct matrix *m)
 {
@@ -122,4 +123,78 @@ struct matrix *matrix_crossproduct(struct matrix *m1, struct matrix *m2)
     }
 
     return result;
+}
+
+double _matrix_det_2x2(double *e)
+{
+    return (e[0]*e[3] - e[1]*e[2]);
+}
+
+void _matrix_get_conjmatrix(double *e_conj, size_t N, double *e, size_t row, size_t col)
+{
+    // returning conjugate matrix: matrix of removing ith row and jth column
+    // of a reference matrix 'e'
+    // note that reference matrix 'e' and the result conjugate matrix
+    // 'e_conj' both are memory-allocated and vectorized
+    
+    size_t i, j, k = 0;
+    size_t vidx;
+    for (j = 1; j <= N; j++) {
+        for (i = 1; i <= N; i++) {
+            if (i != row && j != col) {
+                vidx = matrix_pos2vidx_2d_square(N, i, j);
+                e_conj[k] = e[vidx];
+                k++;
+            }
+        }
+    }
+}
+
+double _matrix_det_NxN(size_t N, double *e)
+{
+    // purpose of this internal function is:
+    // 1. calling this function recursively
+    // 2. avoid extra checking in matrix_det at each recursion
+
+    if (N == 2)
+        return _matrix_det_2x2(e);
+    
+    size_t i;
+    double sgn = +1;
+    double det = 0, temp;
+    double *e_conj = (double *)calloc((N-1)*(N-1), sizeof(double));
+    for (i = 1; i <= N; i++) {
+        _matrix_get_conjmatrix(e_conj, N, e, i, 1);
+        temp = _matrix_det_NxN(N-1, e_conj);
+        det = det + sgn * e[i-1] * temp;
+        sgn = -sgn;
+    }
+    free_safe(e_conj);
+    return det;
+}
+
+double matrix_det(struct matrix *m)
+{
+    // determinant is only defined for square 2D matrices
+    // if we assume a number is a 1x1 2D matrix,
+    // so the determinant would be the same as the
+    // number
+
+    if (matrix_issquare(m) != 0)
+        return -1;
+    
+    // higher dimensional matrices require more calculations
+    double det;
+    if (m->dims[0] > 2)
+        det = _matrix_det_NxN(m->dims[0], m->e);
+    
+    // determinant of a 2x2 matrix is easy
+    if (m->dims[0] == 2)
+        return _matrix_det_2x2(m->e);
+
+    // determinant of a single element matrix is that number
+    if (m->e_count == 1)
+        return m->e[0];
+
+    return det;
 }

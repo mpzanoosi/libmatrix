@@ -102,6 +102,22 @@ int test_matrix_transpose()
     return 0;
 }
 
+int test_matrix_det()
+{
+    size_t dim_count = 2;
+    // siz_t dims[] = {3,3};
+    size_t dims[] = {6,6};
+    struct matrix *A = matrix_init(dim_count, dims);
+    // double e[] = {2, 3, -2, 1.2, 4, 3, -1, 7, 19};
+    double e[] = {7,1,9,2,3,0,6,2,1,8,2,5,9,7,6,0,0,8,3,4,8,4,4,6,4,1,4,5,5,3,3,8,2,3,2,2};
+    matrix_set_e(A, e);
+    double detA = matrix_det(A);
+    matrix_print_all(A);
+    printf("------ det = %f\n", detA);
+    matrix_destroy(A);
+    return 0;
+}
+
 int main()
 {
     // test1_1D();
@@ -109,6 +125,7 @@ int main()
     // test2_1D();
     // test2_2D();
     // test_operators();
-    test_matrix_transpose();
+    // test_matrix_transpose();
+    test_matrix_det();
     return 0;
 }

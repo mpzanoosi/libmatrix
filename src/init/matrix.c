@@ -48,6 +48,22 @@ struct matrix *matrix_init(size_t dim_count, size_t *dims)
     return new_matrix;
 }
 
+int matrix_set_e(struct matrix *m, double *e)
+{
+    size_t i;
+    for (i = 0; i < m->e_count; i++)
+        m->e[i] = e[i];
+    return 0;
+}
+
+int matrix_set_dims(struct matrix *m, double *dims)
+{
+    size_t i;
+    for (i = 0; i < m->dim_count; i++)
+        m->dims[i] = dims[i];
+    return 0;
+}
+
 struct matrix *matrix_init_empty_labels(size_t dim_count, struct matrix **labels)
 {
     // making an empty matrix with dimensions based on 'labels':

@@ -1,6 +1,7 @@
 # basics subfolder contains very basic operations on matrices,
 # like matrix_transpose, etc.
 add_library(basics
+		"checking.c"
 		"basics.c"
 	)
 
