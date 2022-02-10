@@ -94,7 +94,7 @@ char *matrix_array_strval_double_vidxs(double *a, size_t *vidxs, size_t count)
     }
 
     // exactly same as array_strval, but indexes are not 
-    // typical 0, 1, ..., count-1; instead the indexes are stored
+    // typical 0, 1, ..., count-1; instead, the indexes are stored
     // in vidxs[0], vidxs[1], ..., vidxs[count-1]
 
     char *strval; // output of this function

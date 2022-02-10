@@ -16,6 +16,7 @@ struct matrix {
     size_t *dims; //<! number of elements at each dimension
     size_t e_count; //<! total # elements = multiplication of values in 'dims'
     double *e; //<! all elements in a vectorized array
+    double **e2; //<! a 2D mapping of 'e' just for 2D matrices
     size_t l_count; //<! total # labels = sum of values in 'dims'
     double *l; //<! inserted tags or labels for each dimension
 };
@@ -35,6 +36,10 @@ struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels);
 int matrix_destroy(struct matrix *m);
 
 int matrix_destroy_batch(int count, ...);
+
+int matrix_set_e(struct matrix *m, double *e);
+
+int matrix_set_dims(struct matrix *m, double *dims);
 
 struct matrix *matrix_dup(struct matrix *m);
 
