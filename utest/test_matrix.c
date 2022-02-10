@@ -125,7 +125,7 @@ int main()
     // test2_1D();
     // test2_2D();
     // test_operators();
-    // test_matrix_transpose();
-    test_matrix_det();
+    test_matrix_transpose();
+    // test_matrix_det();
     return 0;
 }

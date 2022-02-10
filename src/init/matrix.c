@@ -19,7 +19,7 @@ struct matrix *matrix_init_empty(size_t dim_count, size_t *dims)
     return new_matrix;
 }
 
-void _matrix_init_e2(struct matrix *m)
+void _matrix_e2_init(struct matrix *m)
 {
     // assuming m is an MxN matrix
     size_t M = m->dims[0], N = m->dims[1];
@@ -30,10 +30,10 @@ void _matrix_init_e2(struct matrix *m)
     }
 }
 
-void _matrix_update_e2(struct matrix *m)
+void _matrix_e2_update(struct matrix *m)
 {
     free_safe(m->e2);
-    _matrix_init_e2(m);
+    _matrix_e2_init(m);
 }
 
 struct matrix *matrix_init(size_t dim_count, size_t *dims)
@@ -42,7 +42,7 @@ struct matrix *matrix_init(size_t dim_count, size_t *dims)
     new_matrix->e_count = matrix_array_pimult(dim_count, dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     if (dim_count == 2) {
-        _matrix_init_e2(new_matrix);
+        _matrix_e2_init(new_matrix);
     }
     // "he is beginning to believe again!"
     return new_matrix;
@@ -93,7 +93,7 @@ struct matrix *matrix_init_labels(size_t dim_count, struct matrix **labels)
     new_matrix->e_count = matrix_array_pimult(dim_count, new_matrix->dims);
     new_matrix->e = (double *)calloc(new_matrix->e_count, sizeof(double));
     if (dim_count == 2) {
-        _matrix_init_e2(new_matrix);
+        _matrix_e2_init(new_matrix);
     }
     return new_matrix;
 }

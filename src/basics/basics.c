@@ -45,7 +45,7 @@ struct matrix *matrix_transpose(struct matrix *m)
         }
         mT->dims[0] = N;
         mT->dims[1] = M;
-        _matrix_update_e2(mT);
+        _matrix_e2_update(mT);
         // transposing labels as well
         if (m->l_count > 0) {
             for (i = 0; i < M; i++)
