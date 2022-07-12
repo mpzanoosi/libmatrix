@@ -23,6 +23,9 @@ struct matrix {
     double *e;          //<! all elements in a vectorized array
 };
 
+// custom function type
+typedef struct matrix *(*matrix_func)(struct matrix *);
+
 // init
 struct matrix *matrix_init(size_t dim_count, size_t *dims);
 int matrix_destroy(struct matrix *A);
@@ -57,6 +60,7 @@ int matrix_split_col(struct matrix *A, struct matrix *A_up, struct matrix *A_dow
 struct matrix *matrix_add(struct matrix *A, struct matrix *B);
 struct matrix *matrix_sub(struct matrix *A, struct matrix *B);
 struct matrix *matrix_mul(struct matrix *A, struct matrix *B);
+int matrix_calc(struct matrix *A, matrix_func f); // sin, cos, tan, ...; useful with <math.h> library
 struct matrix *matrix_dotproduct(struct matrix *A, struct matrix *B);
 struct matrix *matrix_crossproduct(struct matrix *A, struct matrix *B);
 double matrix_det(struct matrix *A);
@@ -87,27 +91,14 @@ int matrix_iscov(struct matrix *A);
 // memory management
 struct matrix *matrix_save2file(struct matrix *A, char *filename);
 
-// ***** init ***** //
-// todo: develop this function
-int matrix_calc(matrix_func f, struct matrix *m);
-
-// ***** making strings and printing ***** //
-
-char *matrix_strval(struct matrix *m);
-
+// making strings and printing
 char *matrix_strval_2d(struct matrix *m);
-
 char *matrix_strval_metadata(struct matrix *m);
-
 void matrix_print(struct matrix *m);
-
 void matrix_print_metadata(struct matrix *m);
-
 #define matrix_print_all(m) ({\
     printf("%s: \n", #m); \
     matrix_print_metadata(m); \
     matrix_print(m); })
-
-// ***** end ***** //
 
 #endif // MATRIX_H
