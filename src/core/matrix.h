@@ -7,38 +7,52 @@
 #include <math.h>
 #include <stdarg.h>
 
-// ***** definitions ***** //
+// basic structure
+struct matrix {
+	size_t dim_count;   //<! number of dimensions
+	size_t *dims;       //<! number of elements at each dimension
+	size_t e_count;     //<! total # elements = multiplication of values in 'dims'
+	double *e;          //<! all elements in a vectorized array
+};
+
+// numerical definitions
 #define MATRIX_PI   M_PI
 
-typedef enum {
-    MATRIX_SORT_ASCEND,
-    MATRIX_SORT_DESCEND
-} matrix_sort_type;
+// functional definitions
+#define structalloc(type, name) \
+	type *name = (type *)malloc(sizeof(type))
+#define structdup(obj) ({ \
+	structalloc(typeof(*obj), obj##_copy); \
+	(typeof(obj))memcpy(obj##_copy, obj, sizeof(typeof(*obj))); })
+#define ptrccpy(dst, src, type, count) ({ \
+	dst = (type *)calloc(count, sizeof(type)); \
+	int i; \
+	for (i = 0; i < count; i++) { \
+		dst[i] = src[i]; \
+	}})
+#define free_safe(x) ({free(x); x = NULL;})
 
-// ***** basic structure ***** //
-struct matrix {
-    size_t dim_count;   //<! number of dimensions
-    size_t *dims;       //<! number of elements at each dimension
-    size_t e_count;     //<! total # elements = multiplication of values in 'dims'
-    double *e;          //<! all elements in a vectorized array
-};
+// enums
+typedef enum {
+	MATRIX_SORT_ASCEND,
+	MATRIX_SORT_DESCEND
+} matrix_sort_type;
 
 // custom function type
 typedef struct matrix *(*matrix_func)(struct matrix *);
 
 // init
-struct matrix *matrix_init(size_t dim_count, size_t *dims);
-int matrix_destroy(struct matrix *A);
-int matrix_destroy_batch(int count, ...);
-struct matrix *matrix_dup(struct matrix *A);
+struct matrix *matrix_init(size_t dim_count, size_t *dims); // initializing a matrix
+int matrix_destroy(struct matrix *A); // freeing up a matrix
+int matrix_destroy_batch(int count, ...); // freeing up a bunch of matrices
 
 // iterators
 #define matrix_for_each_element(i, A) \
-    for (i = 0; i < (A)->e_count; i++)
+	for (i = 0; i < (A)->e_count; i++)
 #define matrix_for_x_in_col(i, A, c) \
-    for (i = (c-1)*(A)->dims[0]; i < (c)*(A)->dims[0]; i++)
+	for (i = (c-1)*(A)->dims[0]; i < (c)*(A)->dims[0]; i++)
 #define matrix_for_x_in_row(i, A, r) \
-    for (i = (r-1); i <= (r-1) + ((A)->dims[1]-1)*(A)->dims[0]; i+=(A)->dims[0])
+	for (i = (r-1); i <= (r-1) + ((A)->dims[1]-1)*(A)->dims[0]; i+=(A)->dims[0])
 
 
 // basic - primary
@@ -77,8 +91,8 @@ struct matrix *matrix_array_range(double x1, double x2, double dx);
 struct matrix *matrix_array_linspace(double x1, double x2, size_t count);
 struct matrix *matrix_array_dotproduct(struct matrix *a, struct matrix *b);
 struct matrix *matrix_array_crossproduct(struct matrix *a, struct matrix *b);
-double matrix_array_sum(struct matrix *a);
-double matrix_array_mul(struct matrix *a);
+double matrix_array_sum(size_t count, double *a);
+size_t matrix_array_mul(size_t count, size_t *a);
 struct matrix *matrix_array_conv(struct matrix *a, struct matrix *b);
 
 // check
@@ -89,6 +103,7 @@ int matrix_ishermit(struct matrix *A);
 int matrix_iscov(struct matrix *A);
 
 // memory management
+struct matrix *matrix_dup(struct matrix *A); // duplicating a matrix (including contents)
 struct matrix *matrix_save2file(struct matrix *A, char *filename);
 
 // making strings and printing
@@ -97,8 +112,8 @@ char *matrix_strval_metadata(struct matrix *m);
 void matrix_print(struct matrix *m);
 void matrix_print_metadata(struct matrix *m);
 #define matrix_print_all(m) ({\
-    printf("%s: \n", #m); \
-    matrix_print_metadata(m); \
-    matrix_print(m); })
+	printf("%s: \n", #m); \
+	matrix_print_metadata(m); \
+	matrix_print(m); })
 
 #endif // MATRIX_H

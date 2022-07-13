@@ -1,16 +1,18 @@
-# note: a good approach for adding .c and .h files
-#		is to add them manually!
-# 		if the number of files gets so big, maybe I 
-#		switch to use file(GLOB_RECURSE ...) instead
+# CMakeLists for libmatrix; source files are added manually 
+# which seems that is a good approach! :/
 
 # adding files to the project
 add_library(matrix SHARED
-		"init/matrix.c"
+	"core/array.c"
+	"core/basic.c"
+	"core/check.c"
+	"core/init.c"
+	"core/mm.c"
 	)
 
 # adding properties
 set_target_properties(matrix PROPERTIES 
-		PUBLIC_HEADER "init/matrix.h"
+		PUBLIC_HEADER "core/matrix.h"
 		VERSION ${VERSION_STRING}
 		SOVERSION ${VERSION_MAJOR}
 	)
@@ -22,11 +24,13 @@ INSTALL(TARGETS matrix
         LIBRARY PERMISSIONS WORLD_READ WORLD_WRITE WORLD_EXECUTE
 	)
 	
-# adding subdirectories
-add_subdirectory(init)
-add_subdirectory(basics)
-add_subdirectory(funcs)
+# adding new subdirectories
+# 1. add your CMakeLists.txt into your subdir
+# 2. use add_subdirectory(<dir>) below
+# 3. add made object files into target_link_libraries() in the end
 
-# actually making the library
+# add_subdirectory(stat)
+
+# making the library
 set(CMAKE_C_FLAGS "-rdynamic -fPIC -g -Wall")
-target_link_libraries(matrix init basics funcs)
+target_link_libraries(matrix -lrt -ldl -lm)
