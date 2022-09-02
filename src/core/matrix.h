@@ -5,7 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <float.h>
 #include <stdarg.h>
+
+#define MATRIX_DOUBLE_PREC  2 // default precision for printing
 
 // basic structure
 struct matrix {
@@ -21,16 +24,21 @@ struct matrix {
 // functional definitions
 #define structalloc(type, name) \
 	type *name = (type *)malloc(sizeof(type))
+
 #define structdup(obj) ({ \
 	structalloc(typeof(*obj), obj##_copy); \
 	(typeof(obj))memcpy(obj##_copy, obj, sizeof(typeof(*obj))); })
+
 #define ptrccpy(dst, src, type, count) ({ \
 	dst = (type *)calloc(count, sizeof(type)); \
 	int i; \
 	for (i = 0; i < count; i++) { \
 		dst[i] = src[i]; \
 	}})
+	
 #define free_safe(x) ({free(x); x = NULL;})
+
+#define memreset(ptr, count) memset(ptr, 0, count)
 
 // enums
 typedef enum {
@@ -49,11 +57,29 @@ int matrix_destroy_batch(int count, ...); // freeing up a bunch of matrices
 // iterators
 #define matrix_for_each_element(i, A) \
 	for (i = 0; i < (A)->e_count; i++)
-#define matrix_iter_col(i, A, c) \
-	for (i = (c-1)*(A)->dims[0]; i < (c)*(A)->dims[0]; i++)
-#define matrix_iter_row(i, A, r) \
-	for (i = (r-1); i <= (r-1) + ((A)->dims[1]-1)*(A)->dims[0]; i+=(A)->dims[0])
 
+#define matrix_for_each_col(c, A) \
+	for (c = 0; c < (A)->dims[1]; c++)
+	
+#define matrix_for_each_row(r, A) \
+	for (r = 0; r < (A)->dims[0]; r++)
+
+#define matrix_for_each_x_in_col(i, A, c, x) \
+	for (i = (c-1)*(A)->dims[0], x = A->e[i]; i < (c)*(A)->dims[0]; i++)
+
+#define matrix_for_each_x_in_row(j, A, r, x) \
+	for (j = (r-1), x = A->e[j]; j <= (r-1) + ((A)->dims[1]-1)*(A)->dims[0]; j+=(A)->dims[0])
+
+
+// making strings and printing
+char *matrix_strval_metadata(struct matrix *m);
+void matrix_print_metadata(struct matrix *m);
+char *matrix_strval(struct matrix *m);
+void matrix_print(struct matrix *m);
+#define matrix_print_all(m) ({\
+	printf("%s: \n", #m); \
+	matrix_print_metadata(m); \
+	matrix_print(m); })
 
 // basic - primary
 struct matrix *matrix_transpose(struct matrix *A);
@@ -105,15 +131,5 @@ int matrix_iscov(struct matrix *A);
 // memory management
 struct matrix *matrix_dup(struct matrix *A); // duplicating a matrix (including contents)
 struct matrix *matrix_save2file(struct matrix *A, char *filename);
-
-// making strings and printing
-char *matrix_strval_2d(struct matrix *m);
-char *matrix_strval_metadata(struct matrix *m);
-void matrix_print(struct matrix *m);
-void matrix_print_metadata(struct matrix *m);
-#define matrix_print_all(m) ({\
-	printf("%s: \n", #m); \
-	matrix_print_metadata(m); \
-	matrix_print(m); })
 
 #endif // MATRIX_H

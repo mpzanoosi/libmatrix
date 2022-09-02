@@ -12,13 +12,11 @@ set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
 set(VERSION_STRING ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
-# uncomment next line to enable testing
-option(TEST "option to libmatrix components" ON)
-
-# directories for outputs
+# testing
+option(TEST "option to libmatrix components" ON) # test ON or OFF
 if(TEST)
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
-	add_subdirectory(utest)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
+	add_subdirectory(test)
 else()
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()

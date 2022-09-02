@@ -29,6 +29,7 @@ INSTALL(TARGETS matrix
 # 2. use add_subdirectory(<dir>) below
 # 3. add made object files into target_link_libraries() in the end
 
+# add sub-directories here:
 # add_subdirectory(stat)
 
 # making the library
