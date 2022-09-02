@@ -49,9 +49,9 @@ int matrix_destroy_batch(int count, ...); // freeing up a bunch of matrices
 // iterators
 #define matrix_for_each_element(i, A) \
 	for (i = 0; i < (A)->e_count; i++)
-#define matrix_for_x_in_col(i, A, c) \
+#define matrix_iter_col(i, A, c) \
 	for (i = (c-1)*(A)->dims[0]; i < (c)*(A)->dims[0]; i++)
-#define matrix_for_x_in_row(i, A, r) \
+#define matrix_iter_row(i, A, r) \
 	for (i = (r-1); i <= (r-1) + ((A)->dims[1]-1)*(A)->dims[0]; i+=(A)->dims[0])
 
 
