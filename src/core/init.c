@@ -66,12 +66,11 @@ char *matrix_strval(struct matrix *m)
     strval = (char *)calloc(needed_bytes_count, sizeof(char));
 
 	int r, j; // iterators for row and elements of a row
-	double x;
     char temp[DBL_MAX_10_EXP+2]; // for holding a number
 	matrix_for_each_row(r, m) {
-		matrix_for_each_x_in_row(j, m, r, x) {
+		matrix_for_each_x_in_row(j, m, r) {
 			memreset(temp, sizeof(temp));
-			sprintf(temp, STR(_strval_double_format)", ", x);
+			sprintf(temp, STR(_strval_double_format)", ", m->e[j]);
 			strcat(strval, temp);
 		}
 		strcat(strval, "\n"); // removing last ',' and putting '\n' in the end
@@ -99,19 +98,19 @@ char *matrix_strval_metadata(struct matrix *m)
 
     // dim_count
     memreset(temp, sizeof(temp));
-    sprintf(temp, "dim_count = %zu\n", m->dim_count);
+    sprintf(temp, "{dim_count = %zu", m->dim_count);
     strcat(strval, temp);
 
     // dims
     memreset(temp, sizeof(temp));
     temp2 = matrix_array_strval_size_t(m->dims, m->dim_count);
-    sprintf(temp, "dims = [%s]\n", temp2);
+    sprintf(temp, ", dims = [%s]", temp2);
     free_safe(temp2);
     strcat(strval, temp);
     
     // e_count
     memreset(temp, sizeof(temp));
-    sprintf(temp, "e_count = %zu\n", m->e_count);
+    sprintf(temp, ", e_count = %zu}\n", m->e_count);
     strcat(strval, temp);
     
     return strval;

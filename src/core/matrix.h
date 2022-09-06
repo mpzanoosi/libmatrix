@@ -59,16 +59,16 @@ int matrix_destroy_batch(int count, ...); // freeing up a bunch of matrices
 	for (i = 0; i < (A)->e_count; i++)
 
 #define matrix_for_each_col(c, A) \
-	for (c = 0; c < (A)->dims[1]; c++)
+	for (c = 1; c <= (A)->dims[1]; c++)
 	
 #define matrix_for_each_row(r, A) \
-	for (r = 0; r < (A)->dims[0]; r++)
+	for (r = 1; r <= (A)->dims[0]; r++)
 
-#define matrix_for_each_x_in_col(i, A, c, x) \
-	for (i = (c-1)*(A)->dims[0], x = A->e[i]; i < (c)*(A)->dims[0]; i++)
+#define matrix_for_each_x_in_col(i, A, c) \
+	for (i = (c-1)*(A)->dims[0]; i < (c)*(A)->dims[0]; i++)
 
-#define matrix_for_each_x_in_row(j, A, r, x) \
-	for (j = (r-1), x = A->e[j]; j <= (r-1) + ((A)->dims[1]-1)*(A)->dims[0]; j+=(A)->dims[0])
+#define matrix_for_each_x_in_row(j, A, r) \
+	for (j = (r-1); j <= (r-1) + ((A)->dims[1]-1)*(A)->dims[0]; j+=(A)->dims[0]) \
 
 
 // making strings and printing
